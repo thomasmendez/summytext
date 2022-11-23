@@ -1,8 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import TitleHeader from './components/TitleHeader';
-import InputTextbox from './components/InputTextbox';
-import SubmitButton from './components/SubmitButton';
+import Main from './views/Main';
 import Footer from './components/Footer';
 
 function App() {
@@ -21,13 +20,7 @@ function App() {
         <TitleHeader titleName='Sum My Text' backgroundColor={'#b5ecf5'} />
       </Grid>
       <Grid item xs={12}>
-        <TitleHeader titleName='Text to Summarize' variant={'h4'} pt={3} pb={3} backgroundColor={'#b5ecf5'} />
-      </Grid>
-      <Grid item xs={12}>
-        <InputTextbox />
-      </Grid>
-      <Grid item xs={12}>
-        <SubmitButton />
+        <Main />
       </Grid>
       <Grid item xs={12}>
         <Footer />
