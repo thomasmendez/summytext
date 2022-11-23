@@ -2,7 +2,6 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import TitleHeader from '../../components/TitleHeader';
 import InputTextbox from '../../components/InputTextbox';
-import SubmitButton from '../../components/SubmitButton';
 
 const Main = () => {
     return (
@@ -16,9 +15,6 @@ const Main = () => {
         </Grid>
         <Grid item xs={12}>
           <InputTextbox />
-        </Grid>
-        <Grid item xs={12}>
-          <SubmitButton />
         </Grid>
       </Grid>
     );

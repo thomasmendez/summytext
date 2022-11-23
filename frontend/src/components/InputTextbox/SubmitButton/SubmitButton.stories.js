@@ -2,7 +2,7 @@ import React from 'react';
 import SubmitButton from './SubmitButton';
 
 export default {
-  title: 'Components/SubmitButton',
+  title: 'Components/InputTextbox/SubmitButton',
   component: SubmitButton,
   argTypes: {
   },
