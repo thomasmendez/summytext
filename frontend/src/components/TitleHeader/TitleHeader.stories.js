@@ -7,7 +7,9 @@ export default {
   argTypes: {
     backgroundColor: { control: 'color' },
     colorSubText: { control: 'color' },
-    titleName: { control: 'text' },
+    pb: { control: 'number'},
+    pt: { control: 'number'},
+    variant: { control: 'text'},
   },
 };
 
@@ -17,5 +19,8 @@ export const TitleHeaderComponent = Template.bind({});
 TitleHeaderComponent.args = {
   backgroundColor: '#f5f8fa',
   colorSubText: 'black',
-  titleName: 'Skills & Tools',
+  titleName: 'Sum My Text',
+  pb: 5,
+  pt: 5,
+  variant: 'h3',
 };
