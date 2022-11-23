@@ -1,12 +1,11 @@
 import React from 'react';
-import Welcome from './components/Welcome';
+import TitleHeader from './components/TitleHeader';
+
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <Welcome />
-      </header>
+      <TitleHeader titleName='Sum My Text' />
     </div>
   );
 }
