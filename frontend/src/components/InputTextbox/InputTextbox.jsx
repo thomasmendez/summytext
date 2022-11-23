@@ -1,24 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, TextField } from '@mui/material';
+import { Card, CardContent, CardActions, Button, TextField } from '@mui/material';
+import SubmitButton from './SubmitButton';
 
 const InputTextbox = (props) => {
   const { backgroundColor } = props;
   return(
-    <Grid
-      container
-      alignItems="left"
-      justifyContent="left"
-      textAlign="left"
-    >
-      <TextField
-        fullWidth
-        label="Enter text you wish to summarize here..."
-        multiline
-        rows={20}
-        style={{ backgroundColor: backgroundColor }}
-      />
-    </Grid>
+    <Card sx={{ width: 1 }} style={{ backgroundColor: backgroundColor }}>
+      <CardContent>
+        <TextField
+          fullWidth
+          label="Enter text you wish to summarize here..."
+          multiline
+          rows={20}
+        />
+      </CardContent>
+      <CardActions>
+        <SubmitButton />
+      </CardActions>
+    </Card>
   );
 };
 
