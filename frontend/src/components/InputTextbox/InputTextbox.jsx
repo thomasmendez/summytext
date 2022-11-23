@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardContent, CardActions, Button, TextField } from '@mui/material';
+import { Card, CardContent, CardActions, TextField } from '@mui/material';
 import SubmitButton from './SubmitButton';
 
 const InputTextbox = (props) => {
@@ -16,7 +16,7 @@ const InputTextbox = (props) => {
         />
       </CardContent>
       <CardActions>
-        <SubmitButton />
+        <SubmitButton initialIsLoading={false}/>
       </CardActions>
     </Card>
   );

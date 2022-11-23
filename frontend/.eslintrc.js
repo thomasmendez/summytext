@@ -26,7 +26,7 @@ module.exports = {
   ignorePatterns: ['./dist'],
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
-    'react/jsx-no-useless-fragment': ['error'],
+    'react/jsx-no-useless-fragment': [2, { 'allowExpressions': true }],
     'react/jsx-one-expression-per-line': ['error'],
     'react/jsx-child-element-spacing': 'error',
     'react/jsx-indent': [2, 2, { 'checkAttributes': true, 'indentLogicalExpressions': true }],
