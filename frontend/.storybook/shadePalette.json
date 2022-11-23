@@ -1,0 +1,28 @@
+[
+  {
+    "label": "light",
+    "values": [
+      {
+        "label": "100",
+        "value": "#fff"
+      },
+      {
+        "label": "200",
+        "value": "#aaa"
+      }
+    ]
+  },
+  {
+    "label": "dark",
+    "values": [
+      {
+        "label": "100",
+        "value": "#222"
+      },
+      {
+        "label": "200",
+        "value": "#000000"
+      }
+    ]
+  }
+]
