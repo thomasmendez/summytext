@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
+import { analysisActions } from '../../../store/analysis';
 
-const SubmitButton = ({ initialIsLoading }) => {
-  const [isLoading, setIsLoading] = useState(initialIsLoading);
+const SubmitButton = () => {
 
-  useEffect(() => {
-    setIsLoading(initialIsLoading);
-  }, [initialIsLoading]);
+  const dispatch = useDispatch();
+
+  const isLoading = useSelector((state) => state.analysis.isLoading);
 
   return(
     <>
@@ -21,7 +21,7 @@ const SubmitButton = ({ initialIsLoading }) => {
           Submit
         </LoadingButton>
       ) : (
-        <Button fullWidth variant="contained" color="success" size='large' onClick={() => {setIsLoading(true);}}>
+        <Button fullWidth variant="contained" color="success" size='large' onClick={() => {dispatch(analysisActions.performAnalysis({text: 'my text'}));}}>
           Submit
         </Button>
       )}
@@ -30,11 +30,9 @@ const SubmitButton = ({ initialIsLoading }) => {
 };
 
 SubmitButton.defaultProps = {
-  initialIsLoading: false,
 };
 
 SubmitButton.propTypes = {
-  initialIsLoading: PropTypes.bool.isRequired,
 };
 
 export default SubmitButton;
