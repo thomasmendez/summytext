@@ -1,9 +1,11 @@
 import React from 'react';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import PropTypes from 'prop-types';
+import { Grid } from '@mui/material';
 import TitleHeader from '../../components/TitleHeader';
 import CardResult from '../../components/CardResult';
 
-const Analysis = () => {
+const Analysis = (props) => {
+  const { sentiment, grammaticalCorrectness, topics, summary } = props;
     return (
       <Grid
         container
@@ -15,20 +17,34 @@ const Analysis = () => {
         </Grid>
         <Grid container item xs={12} spacing={3}>
           <Grid container item xs={6}>
-            <CardResult title='Sentiment' content='Positive' backgroundColor={'#b5ecf5'}/>
+            <CardResult title='Sentiment' content={sentiment} backgroundColor={'#b5ecf5'}/>
           </Grid>
           <Grid container item xs={6}>
-            <CardResult title='Gramatical Correctness' content='Passing' backgroundColor={'#b5ecf5'}/>
+            <CardResult title='Gramatical Correctness' content={grammaticalCorrectness} backgroundColor={'#b5ecf5'}/>
           </Grid>
         </Grid>
         <Grid container item xs={12}>
-          <CardResult title='Topics' content='List of Topics' backgroundColor={'#b5ecf5'}/>
+          <CardResult title='Topics' content={topics} backgroundColor={'#b5ecf5'}/>
         </Grid>
         <Grid container item xs={12}>
-          <CardResult title='Summarized Text' content='Summary' backgroundColor={'#b5ecf5'}/>
+          <CardResult title='Summarized Text' content={summary} backgroundColor={'#b5ecf5'}/>
         </Grid>
       </Grid>
     );
+};
+
+Analysis.defaultProps = {
+  sentiment: 'Positive',
+  grammaticalCorrectness: 'Passing',
+  topics: ['math', 'science'],
+  summary: 'My text summary',
+};
+
+Analysis.propTypes = {
+  sentiment: PropTypes.string,
+  grammaticalCorrectness: PropTypes.string,
+  topics: PropTypes.arrayOf(PropTypes.string),
+  summary: PropTypes.string,
 };
 
 export default Analysis;

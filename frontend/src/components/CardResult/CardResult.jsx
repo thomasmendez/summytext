@@ -27,7 +27,7 @@ CardResult.defaultProps = {
 CardResult.propTypes = {
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
-  content: PropTypes.string
+  content: PropTypes.string,
 };
 
 export default CardResult;

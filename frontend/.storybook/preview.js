@@ -1,4 +1,6 @@
 import React from 'react';
+import { Provider } from 'react-redux'
+import store from "../src/store";
 import shadePalette from './shadePalette.json'
 import primaryColorsPalette from './primaryColorsPalette.json'
 
@@ -27,6 +29,8 @@ export const parameters = {
 
 export const decorators = [
   (Story) => (
-    <Story />
+    <Provider store={store}>
+      <Story />
+    </Provider>
   )
 ]
