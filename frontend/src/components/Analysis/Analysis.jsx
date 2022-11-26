@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from '@mui/material';
-import TitleHeader from '../../components/TitleHeader';
-import CardResult from '../../components/CardResult';
+import TitleHeader from '../TitleHeader';
+import CardResult from '../CardResult';
 
 const Analysis = (props) => {
   const { sentiment, grammaticalCorrectness, topics, summary } = props;

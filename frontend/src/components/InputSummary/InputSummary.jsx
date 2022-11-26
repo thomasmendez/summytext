@@ -1,17 +1,11 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import TitleHeader from '../../components/TitleHeader';
-import InputTextbox from '../../components/InputTextbox';
+import TitleHeader from '../TitleHeader';
+import InputTextbox from './InputTextbox';
 
-const Main = () => {
-  // TODO: Get from store
-  // TODO: Check if unchanged state
-  return (
-    <Grid
-      container
-      item
-      spacing={3}
-    >
+const InputSummary = () => {
+  return(
+    <Grid container item xs={12}>
       <Grid item xs={12}>
         <TitleHeader titleName='Text to Summarize' variant={'h5'} pt={3} pb={3} backgroundColor={'#b5ecf5'} />
       </Grid>
@@ -22,4 +16,10 @@ const Main = () => {
   );
 };
 
-export default Main;
+InputSummary.defaultProps = {
+};
+
+InputSummary.propTypes = {
+};
+
+export default InputSummary;
