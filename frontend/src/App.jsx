@@ -52,7 +52,7 @@ function App() {
       style={{ backgroundColor: 'lavender'}}
     >
       <Grid item xs={12}>
-        <TitleHeader titleName='Sum My Text' backgroundColor={'#b5ecf5'} />
+        <TitleHeader titleName='Sum My Text' variant={'h4'} backgroundColor={'#b5ecf5'} />
       </Grid>
       <Grid item xs={12}>
         {data ? (
