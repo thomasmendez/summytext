@@ -11,7 +11,7 @@ const CardResult = (props) => {
             {title}
           </Typography>
           <Typography variant="h5" component="div">
-            {content}
+            {Array.isArray(content) ? content.join(', ') : content}
           </Typography>
         </CardContent>
       </Card>
@@ -21,13 +21,16 @@ const CardResult = (props) => {
 CardResult.defaultProps = {
   backgroundColor: 'lavender',
   title: 'Title',
-  content: 'Content',
+  content: ['Technology', 'History', 'Medicine'],
 };
 
 CardResult.propTypes = {
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
-  content: PropTypes.string,
+  content: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
 };
 
 export default CardResult;

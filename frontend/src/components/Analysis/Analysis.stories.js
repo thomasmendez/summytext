@@ -18,6 +18,6 @@ export const AnalysisView = Template.bind({});
 AnalysisView.args = {
   sentiment: 'Positive',
   grammaticalCorrectness: 'Passing',
-  topics: ['math', 'science'],
+  topics: ['Technology', 'History', 'Medicine'],
   summary: 'My text summary',
 };
