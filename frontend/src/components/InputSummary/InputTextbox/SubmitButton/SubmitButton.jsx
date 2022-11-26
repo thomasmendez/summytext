@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
-import { analysisActions } from '../../../store/analysis';
+import { analysisActions } from '../../../../store/analysis';
 
 const SubmitButton = () => {
 

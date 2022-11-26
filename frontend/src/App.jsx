@@ -4,8 +4,8 @@ import { analysisActions } from './store/analysis';
 import axios from 'axios';
 import { Grid } from '@mui/material';
 import TitleHeader from './components/TitleHeader';
-import Main from './views/Main';
-import Analysis from './views/Analysis';
+import InputSummary from './components/InputSummary';
+import Analysis from './components/Analysis';
 import Footer from './components/Footer';
 
 function App() {
@@ -54,15 +54,24 @@ function App() {
       <Grid item xs={12}>
         <TitleHeader titleName='Sum My Text' variant={'h4'} backgroundColor={'#b5ecf5'} />
       </Grid>
-      <Grid item xs={12}>
+      <Grid container item xs={12}>
         {data ? (
-          <Analysis
-            sentiment={data.sentiment}
-            grammaticalCorrectness={data.grammaticalCorrectness}
-            topics={data.topics}
-            summary={data.summary}
-          />
-        ) : (<Main />)}
+          <>
+            <Grid item xs={6}>
+              <InputSummary />
+            </Grid>
+            <Grid item xs={6}>
+              <Analysis
+                sentiment={data.sentiment}
+                grammaticalCorrectness={data.grammaticalCorrectness}
+                topics={data.topics}
+                summary={data.summary}
+              />
+            </Grid>
+          </>
+        ) : (
+          <InputSummary />
+        )}
       </Grid>
       <Grid item xs={12}>
         <Footer />
