@@ -37,7 +37,7 @@ Analysis.defaultProps = {
   backgroundColor: '#d3eef2',
   sentiment: 'Positive',
   grammaticalCorrectness: 'Passing',
-  topics: ['math', 'science'],
+  topics: ['Technology', 'History', 'Medicine'],
   summary: 'My text summary',
 };
 
