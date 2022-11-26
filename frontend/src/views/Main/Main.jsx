@@ -13,7 +13,7 @@ const Main = () => {
       spacing={3}
     >
       <Grid item xs={12}>
-        <TitleHeader titleName='Text to Summarize' variant={'h4'} pt={3} pb={3} backgroundColor={'#b5ecf5'} />
+        <TitleHeader titleName='Text to Summarize' variant={'h5'} pt={3} pb={3} backgroundColor={'#b5ecf5'} />
       </Grid>
       <Grid item xs={12}>
         <InputTextbox />
