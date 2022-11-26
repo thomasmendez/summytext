@@ -5,9 +5,7 @@ export const analysisSlice = createSlice({
   initialState: {
     isLoading: false,
     reqBody: null,
-    data: {
-      grammaticalCorrectness: 'True',
-    },
+    data: null,
     error: null,
 
   },
