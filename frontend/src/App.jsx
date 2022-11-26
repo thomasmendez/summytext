@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { analysisActions } from './store/analysis';
 import axios from 'axios';
-import { Grid } from '@mui/material';
+import { Grid, Snackbar, Alert } from '@mui/material';
 import TitleHeader from './components/TitleHeader';
 import InputSummary from './components/InputSummary';
 import Analysis from './components/Analysis';
@@ -13,6 +13,7 @@ function App() {
   const isLoading  = useSelector((state) => state.analysis.isLoading);
   const reqBody = useSelector((state) => state.analysis.reqBody);
   const data = useSelector((state) => state.analysis.data);
+  const error = useSelector((state) => state.analysis.error);
 
   useEffect(() => {
     if (isLoading) {
@@ -26,7 +27,7 @@ function App() {
           console.error(err.response.data);
           console.error(err.response.status);
           console.error(err.response.headers);
-          dispatch(analysisActions.errorAnalysis(err.data));
+          dispatch(analysisActions.errorAnalysis(err.response.data));
         } else if (err.request) {
           // The request was made but no response was received
           console.error(err.request);
@@ -51,6 +52,19 @@ function App() {
       spacing={3}
       style={{ backgroundColor: 'lavender'}}
     >
+      <Snackbar
+        open={error ? true : false}
+        autoHideDuration={6000}
+        onClose={() => dispatch(analysisActions.clearErrorAnalysis())}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Alert variant="filled" severity="error" sx={{ width: '100%' }} onClose={() => dispatch(analysisActions.clearErrorAnalysis())}>
+          {error}
+        </Alert>
+      </Snackbar>
       <Grid item xs={12}>
         <TitleHeader titleName='Sum My Text' variant={'h4'} backgroundColor={'#b5ecf5'} />
       </Grid>

@@ -7,7 +7,6 @@ export const analysisSlice = createSlice({
     reqBody: null,
     data: null,
     error: null,
-
   },
   reducers: {
     performAnalysis: (state, action) => {
@@ -21,6 +20,9 @@ export const analysisSlice = createSlice({
     errorAnalysis: (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+    },
+    clearErrorAnalysis: (state) => {
+      state.error = null;
     },
   },
 });
