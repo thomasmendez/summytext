@@ -2,7 +2,7 @@ import React from 'react';
 import InputTextbox from './InputTextbox';
 
 export default {
-  title: 'Components/InputTextbox',
+  title: 'Components/InputSummary/InputTextbox',
   component: InputTextbox,
   argTypes: {
     backgroundColor: { control: 'color' },
