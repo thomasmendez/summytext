@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: storybook-static-prd
-          path: storybook-static/
+          path: frontend/storybook-static/
           retention-days: 1
 
   configure-s3-prd:
@@ -260,7 +260,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: storybook-static-prd
-          path: storybook-static/
+          path: frontend/storybook-static/
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -268,4 +268,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync ./storybook-static/ s3://${{ env.AWS_BUCKET_NAME_STORYBOOK }}
+        run: aws s3 sync ./frontend/storybook-static/ s3://${{ env.AWS_BUCKET_NAME_STORYBOOK }}
