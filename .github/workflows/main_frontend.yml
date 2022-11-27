@@ -4,16 +4,17 @@ on:
   push:
     branches: [main]
 
+env:
+  SUM_MY_TEXT_SERVICE: https://summytext.com/v1/predict
+  AWS_BUCKET_NAME: summytext-dev
+  AWS_BUCKET_NAME_STORYBOOK: summytext-dev-storybook
+
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./frontend
-    env:
-      SUM_MY_TEXT_SERVICE: https://summytext.com/v1/predict
-      AWS_BUCKET_NAME: summytext-prd
-      AWS_BUCKET_NAME_STORYBOOK: summytext-prd-storybook
     steps:
       - name: Checkout
         uses: actions/checkout@v2
