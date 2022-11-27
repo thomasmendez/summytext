@@ -8,6 +8,7 @@ const SubmitButton = () => {
 
   const dispatch = useDispatch();
 
+  const text = useSelector((state) => state.analysis.text);
   const isLoading = useSelector((state) => state.analysis.isLoading);
 
   return(
@@ -21,7 +22,7 @@ const SubmitButton = () => {
           Submit
         </LoadingButton>
       ) : (
-        <Button fullWidth variant="contained" color="success" size='large' onClick={() => {dispatch(analysisActions.performAnalysis({text: 'my text'}));}}>
+        <Button fullWidth variant="contained" color="success" size='large' onClick={() => {dispatch(analysisActions.performAnalysis({text: text}));}}>
           Submit
         </Button>
       )}
