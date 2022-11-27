@@ -1,4 +1,4 @@
-name: Development.yml CI
+name: Development.yml CI - Frontend
 
 on:
   push:
@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
     env:
       AWS_BUCKET_NAME: summytext-dev
       AWS_BUCKET_NAME_STORYBOOK: summytext-dev-storybook
