@@ -11,13 +11,15 @@ import Footer from './components/Footer';
 function App() {
   const dispatch = useDispatch();
   const isLoading  = useSelector((state) => state.analysis.isLoading);
-  const reqBody = useSelector((state) => state.analysis.reqBody);
+  const text = useSelector((state) => state.analysis.text);
   const data = useSelector((state) => state.analysis.data);
   const error = useSelector((state) => state.analysis.error);
 
   useEffect(() => {
     if (isLoading) {
-      performAnalysis(reqBody).then(res => {
+      performAnalysis({
+        text: text,
+      }).then(res => {
         dispatch(analysisActions.completedAnalysis(res.data));
       }).catch(err => {
         if (err.response) {
@@ -37,7 +39,7 @@ function App() {
         }
       });
     }
-  }, [dispatch, isLoading, reqBody]);
+  }, [dispatch, isLoading, text]);
 
   return (
     <Grid
