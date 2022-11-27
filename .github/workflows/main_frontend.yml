@@ -147,9 +147,6 @@ jobs:
 
   sync-s3-prd:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     needs: [build, configure-s3-prd]
     if: github.ref == 'refs/heads/main'
     steps:
@@ -254,9 +251,6 @@ jobs:
 
   sync-s3-prd-storybook:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     needs: [build, configure-s3-prd-storybook]
     if: github.ref == 'refs/heads/main'
     steps:
