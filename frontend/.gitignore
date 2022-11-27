@@ -38,6 +38,9 @@ node_modules
 # Ignore dist files
 dist
 
+# Ignore env files
+.env
+
 # Eslint
 .eslintcache
 

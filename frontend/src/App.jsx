@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { analysisActions } from './store/analysis';
-import axios from 'axios';
+import { performAnalysis } from './services/sumMyTextService';
 import { Grid, Snackbar, Alert } from '@mui/material';
 import TitleHeader from './components/TitleHeader';
 import InputSummary from './components/InputSummary';
@@ -17,9 +17,7 @@ function App() {
 
   useEffect(() => {
     if (isLoading) {
-      axios.put('http://localhost:8080/baseUrl/v1/predict', {
-        reqBody,
-      }).then(res => {
+      performAnalysis(reqBody).then(res => {
         dispatch(analysisActions.completedAnalysis(res.data));
       }).catch(err => {
         if (err.response) {
