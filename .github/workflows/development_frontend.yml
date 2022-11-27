@@ -12,6 +12,7 @@ jobs:
       run:
         working-directory: ./frontend
     env:
+      SUM_MY_TEXT_SERVICE: https://summytext.com/v1/predict
       AWS_BUCKET_NAME: summytext-dev
       AWS_BUCKET_NAME_STORYBOOK: summytext-dev-storybook
     steps:
