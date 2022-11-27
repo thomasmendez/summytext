@@ -208,9 +208,6 @@ jobs:
 
   sync-s3-dev:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     needs: [build, configure-s3-dev]
     if: github.ref != 'refs/heads/main'
     steps:
@@ -375,9 +372,6 @@ jobs:
 
   sync-s3-dev-storybook:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     needs: [build, configure-s3-dev-storybook]
     if: github.ref != 'refs/heads/main'
     steps:
