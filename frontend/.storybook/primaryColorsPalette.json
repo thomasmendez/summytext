@@ -1,0 +1,29 @@
+[
+  {
+    "label": "red",
+    "values": [
+      {
+        "label": "100",
+        "value": "#FF0000"
+      }
+    ]
+  },
+  {
+    "label": "yellow",
+    "values": [
+      {
+        "label": "200",
+        "value": "#FFFF00"
+      }
+    ]
+  },
+  {
+    "label": "blue",
+    "values": [
+      {
+        "label": "100",
+        "value": "#0000FF"
+      }
+    ]
+  }
+]
