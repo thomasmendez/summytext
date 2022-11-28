@@ -1,0 +1,2 @@
+#!/bin/bash
+echo SUM_MY_TEXT_SERVICE=$SUM_MY_TEXT_SERVICE>.env
