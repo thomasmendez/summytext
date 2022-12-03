@@ -14842,6 +14842,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-speech-recognition@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "react-speech-recognition@npm:3.10.0"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 40f3a2561f525d2624b154ccb6da90592a32fe131c33b3258a8892041bcf0c6f8e4527d7310718aeaee119266b1e8a1c383f9842ae984b7c97987ce9d6a5203f
+  languageName: node
+  linkType: hard
+
 "react-template-simple-site@workspace:.":
   version: 0.0.0-use.local
   resolution: "react-template-simple-site@workspace:."
@@ -14888,6 +14897,8 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-redux: ^8.0.5
+    react-speech-recognition: ^3.10.0
+    regenerator-runtime: ^0.13.11
     webpack: ^5.50.0
     webpack-cli: ^4.7.2
     webpack-dev-server: ^4.4.0
@@ -15069,7 +15080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.13.10, regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.7":
+"regenerator-runtime@npm:^0.13.10, regenerator-runtime@npm:^0.13.11, regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.7":
   version: 0.13.11
   resolution: "regenerator-runtime@npm:0.13.11"
   checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
