@@ -17,7 +17,7 @@ const SpeechToTextButton = () => {
 
   useEffect(() => {
     dispatch(analysisActions.handleTextFieldChange(transcript));
-  }, [transcript]);
+  }, [dispatch, transcript]);
 
   return(
     <>
