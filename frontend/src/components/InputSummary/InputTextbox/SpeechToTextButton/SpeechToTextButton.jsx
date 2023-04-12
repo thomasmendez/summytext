@@ -16,7 +16,9 @@ const SpeechToTextButton = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(analysisActions.handleTextFieldChange(transcript));
+    // TODO: Fix this to not run when transcript is empty
+    // It will replace existing store on accident with blank string
+    // dispatch(analysisActions.handleTextFieldChange(transcript));
   }, [dispatch, transcript]);
 
   return(

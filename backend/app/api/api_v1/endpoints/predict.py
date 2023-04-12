@@ -46,7 +46,7 @@ async def analyze(input_text: InputText):
     model = TFBertForSequenceClassification.from_pretrained(model_name)
     
     # Define the labels for the classification task
-    labels = ['negative', 'positive']
+    labels = ['Negative', 'Positive']
     
     # Define the input text
     text = "I really enjoyed this movie. The acting was great and the plot kept me engaged."
