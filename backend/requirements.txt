@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+mangum
+python-dotenv
+transformers
+spacy
+bert-extractive-summarizer

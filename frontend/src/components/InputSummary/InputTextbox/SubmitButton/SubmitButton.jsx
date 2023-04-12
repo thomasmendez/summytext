@@ -22,7 +22,7 @@ const SubmitButton = () => {
           Submit
         </LoadingButton>
       ) : (
-        <Button fullWidth variant="contained" color="success" size='large' onClick={() => {dispatch(analysisActions.performAnalysis({text: text}));}}>
+        <Button fullWidth variant="contained" color="success" size='large' onClick={() => {dispatch(analysisActions.performAnalysis(text));}}>
           Submit
         </Button>
       )}
