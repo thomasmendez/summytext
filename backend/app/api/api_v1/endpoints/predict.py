@@ -18,6 +18,30 @@ class InputText(BaseModel):
 #     matches = tool.check(text)
 #     return [str(match) for match in matches]
 
+def predict_sentiment(text: str) -> str:
+    # Perform topic modeling
+    # Load the BERT tokenizer and model
+    model_name = 'bert-base-uncased'
+    tokenizer = BertTokenizer.from_pretrained(model_name)
+    model = TFBertForSequenceClassification.from_pretrained(model_name)
+    
+    # Define the labels for the classification task
+    labels = ['Negative', 'Positive']
+    
+    # Tokenize the input text
+    input_ids = tokenizer.encode(text, add_special_tokens=True, max_length=512, truncation=True, padding='max_length', return_tensors="tf")
+    
+    # Make predictions on the input text
+    outputs = model(input_ids)[0]
+    probas = tf.nn.softmax(outputs, axis=-1).numpy()[0]
+    predicted_label = labels[np.argmax(probas)]
+    return predicted_label
+
+def predict_summary(text: str) -> str:
+    GPT2_model = TransformerSummarizer(transformer_type="GPT2",transformer_model_key="gpt2-medium")
+    summary = ''.join(GPT2_model(text, min_length=60))
+    return summary
+
 @router.post("/")
 async def analyze(input_text: InputText):
 
@@ -39,29 +63,7 @@ async def analyze(input_text: InputText):
     # doc = grammar_checker(input_text.text)
     # num_errors = len(doc._.language_tool_annotations)
 
-    # Perform topic modeling
-    # Load the BERT tokenizer and model
-    model_name = 'bert-base-uncased'
-    tokenizer = BertTokenizer.from_pretrained(model_name)
-    model = TFBertForSequenceClassification.from_pretrained(model_name)
     
-    # Define the labels for the classification task
-    labels = ['Negative', 'Positive']
-    
-    # Define the input text
-    text = "I really enjoyed this movie. The acting was great and the plot kept me engaged."
-    
-    # Tokenize the input text
-    input_ids = tokenizer.encode(input_text.text, add_special_tokens=True, max_length=512, truncation=True, padding='max_length', return_tensors="tf")
-    
-    # Make predictions on the input text
-    outputs = model(input_ids)[0]
-    probas = tf.nn.softmax(outputs, axis=-1).numpy()[0]
-    predicted_label = labels[np.argmax(probas)]
-
-    GPT2_model = TransformerSummarizer(transformer_type="GPT2",transformer_model_key="gpt2-medium")
-    summary = ''.join(GPT2_model(input_text.text, min_length=60))
-    print(summary)
 
     # text = "I am a engeneer and I likes to play football"
     # grammar_errors = check_grammar(text)
@@ -69,8 +71,8 @@ async def analyze(input_text: InputText):
 
     # Return the analysis results
     return {
-        'summary': summary,
-        'sentiment': predicted_label,
+        'summary': predict_summary(input_text.text),
+        'sentiment': predict_sentiment(input_text.text),
         # 'grammar_errors': grammar_errors,
         # 'topic': predicted_label
     }
