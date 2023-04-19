@@ -6,6 +6,9 @@ import tensorflow as tf
 import numpy as np
 # import language_tool_python
 from transformers import BertTokenizer, TFBertForSequenceClassification
+from flair.data import Sentence
+from flair.nn import Classifier
+
 
 router = APIRouter()
 # tool = language_tool_python.LanguageTool('en-US')
@@ -13,10 +16,6 @@ router = APIRouter()
 # Define the request body schema
 class InputText(BaseModel):
     text: str
-
-# def check_grammar(text):
-#     matches = tool.check(text)
-#     return [str(match) for match in matches]
 
 def predict_sentiment(text: str) -> str:
     # Perform topic modeling
@@ -33,7 +32,10 @@ def predict_sentiment(text: str) -> str:
     
     # Make predictions on the input text
     outputs = model(input_ids)[0]
+    print(outputs)
     probas = tf.nn.softmax(outputs, axis=-1).numpy()[0]
+    print(probas)
+    print(np.argmax(probas))
     predicted_label = labels[np.argmax(probas)]
     return predicted_label
 
@@ -41,6 +43,29 @@ def predict_summary(text: str) -> str:
     GPT2_model = TransformerSummarizer(transformer_type="GPT2",transformer_model_key="gpt2-medium")
     summary = ''.join(GPT2_model(text, min_length=60))
     return summary
+
+def predict_topics(text: str):
+    sentence = Sentence('On September 1st George won 1 dollar while watching Game of Thrones.')
+    # sentence = Sentence(text)
+
+    # load the NER tagger
+    tagger = Classifier.load('ner-ontonotes-large')
+
+    # run NER over sentence
+    tagger.predict(sentence)
+
+    print(sentence.labels[0].value)
+
+    # print the sentence with all annotations
+    print(sentence)
+
+    print(sentence[0])
+
+    for entity in sentence.get_spans('ner'):
+        print(entity)
+    
+
+    return
 
 @router.post("/")
 async def analyze(input_text: InputText):
@@ -72,7 +97,7 @@ async def analyze(input_text: InputText):
     # Return the analysis results
     return {
         'summary': predict_summary(input_text.text),
-        'sentiment': predict_sentiment(input_text.text),
+        # 'sentiment': predict_sentiment(input_text.text),
         # 'grammar_errors': grammar_errors,
-        # 'topic': predicted_label
+        'topic': predict_topics(input_text.text)
     }
