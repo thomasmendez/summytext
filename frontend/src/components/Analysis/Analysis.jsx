@@ -5,7 +5,7 @@ import TitleHeader from '../TitleHeader';
 import CardResult from '../CardResult';
 
 const Analysis = (props) => {
-  const { backgroundColor, sentiment, grammaticalCorrectness, topics, summary } = props;
+  const { backgroundColor, sentiment, topics, summary } = props;
     return (
       <Grid container item xs={12}>
         <Grid item xs={12}>
@@ -14,11 +14,8 @@ const Analysis = (props) => {
         <Card sx={{ width: 1 }} style={{ backgroundColor: backgroundColor }}>
           <CardContent>
             <Grid container item xs={12} spacing={3}>
-              <Grid container item xs={6}>
+              <Grid container item xs={12}>
                 <CardResult title='Sentiment' content={sentiment} backgroundColor={'#b5ecf5'}/>
-              </Grid>
-              <Grid container item xs={6}>
-                <CardResult title='Gramatical Correctness' content={grammaticalCorrectness} backgroundColor={'#b5ecf5'}/>
               </Grid>
               <Grid container item xs={12}>
                 <CardResult title='Topics' content={topics} backgroundColor={'#b5ecf5'}/>
