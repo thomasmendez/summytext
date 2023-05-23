@@ -7,23 +7,24 @@ import numpy as np
 from flair.data import Sentence
 from flair.nn import Classifier
 
+summarizer_transformer = TransformerSummarizer(transformer_type="GPT2",transformer_model_key="gpt2-medium")
+sentiment_classifier = Classifier.load('sentiment')
+topic_labels_classifier = Classifier.load('ner-ontonotes-large')
+
 router = APIRouter()
 
 class InputText(BaseModel):
     text: str
 
 def predict_summary(text: str) -> str:
-    GPT2_model = TransformerSummarizer(transformer_type="GPT2",transformer_model_key="gpt2-medium")
-    summary = ''.join(GPT2_model(text, min_length=60))
+    summary = ''.join(summarizer_transformer(text, min_length=60))
     return summary
 
 def predict_sentiment(text: str):
     
     sentence = Sentence(text)
 
-    tagger = Classifier.load('sentiment')
-
-    tagger.predict(sentence)
+    sentiment_classifier.predict(sentence)
 
     return sentence.labels[0].value
 
@@ -31,9 +32,7 @@ def predict_topics(text: str):
 
     sentence = Sentence(text)
 
-    tagger = Classifier.load('ner-ontonotes-large')
-
-    tagger.predict(sentence)
+    topic_labels_classifier.predict(sentence)
 
     topics = []
     labels = []
