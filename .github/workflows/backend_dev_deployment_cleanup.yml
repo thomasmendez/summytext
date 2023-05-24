@@ -1,4 +1,4 @@
-name: Backend Development.yml Cleanup CI
+name: Backend - Development.yml Cleanup CI
 on:
   pull_request:
     types: [closed]
@@ -9,7 +9,7 @@ jobs:
     env:
       AWS_BUCKET_NAME: summytext-api-dev
       DIST_NAME: function-dev
-      DIST_PATH: function.zip
+      DIST_PATH: backend/function.zip
       AWS_LAMBDA_FUNCTION_S3_KEY: function.zip
       AWS_LAMBDA_FUNCTION_NAME: summytext-api-dev
       AWS_LAMBDA_FUNCTION_HANDLER: app.main.handler

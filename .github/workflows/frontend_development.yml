@@ -57,27 +57,33 @@ jobs:
         with:
           node-version: 16.x
 
+      - name: Navigate to 'frontend' directory
+        run: cd frontend
+
+      - name: Install Packages
+        working-directory: frontend
+        run: yarn install --immutable
+
       - name: Create .env
         run: |
           chmod +x "${GITHUB_WORKSPACE}/frontend/env.sh"
           sh ${GITHUB_WORKSPACE}/frontend/env.sh
-
-      - name: Navigate to 'frontend' directory
-        run: cd ${GITHUB_WORKSPACE}/frontend
-
-      - name: Install Packages
-        run: yarn install --immutable
+        shell: bash
 
       - name: ESLint
+        working-directory: frontend
         run: yarn lint
 
       - name: Prettier
+        working-directory: frontend
         run: yarn pretty
 
       - name: Test
+        working-directory: frontend
         run: yarn test
 
       - name: Build App
+        working-directory: frontend
         run: yarn run build
 
       - name: Create dist Artifact
@@ -88,6 +94,7 @@ jobs:
           retention-days: 1
 
       - name: Build Storybook
+        working-directory: frontend
         run: yarn build-storybook
 
       - name: Create storybook-static Artifact
