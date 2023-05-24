@@ -57,17 +57,17 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: Navigate to 'frontend' directory
-        run: cd frontend
-
-      - name: Install Packages
-        run: yarn install --immutable
-
       - name: Create .env
         run: |
           chmod +x "${GITHUB_WORKSPACE}/frontend/env.sh"
           sh ${GITHUB_WORKSPACE}/frontend/env.sh
         shell: bash
+
+      - name: Navigate to 'frontend' directory
+        run: cd frontend
+
+      - name: Install Packages
+        run: yarn install --immutable
 
       - name: ESLint
         run: yarn lint
