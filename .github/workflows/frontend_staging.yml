@@ -56,6 +56,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Create .env
+        working-directory: frontend
         run: |
           chmod +x "${GITHUB_WORKSPACE}/frontend/env.sh"
           sh ${GITHUB_WORKSPACE}/frontend/env.sh
