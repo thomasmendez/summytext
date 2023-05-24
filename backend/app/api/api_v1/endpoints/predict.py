@@ -1,28 +1,24 @@
 import asyncio
 import time
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from summarizer import TransformerSummarizer
-from transformers import pipeline
-import tensorflow as tf
-import numpy as np
-from flair.data import Sentence
-from flair.nn import Classifier
 
-summarizer_transformer = TransformerSummarizer(transformer_type="GPT2",transformer_model_key="gpt2-medium")
-sentiment_classifier = Classifier.load('sentiment')
-topic_labels_classifier = Classifier.load('ner-ontonotes-large')
+from summarizer import TransformerSummarizer
+from flair.nn import Classifier
+from flair.data import Sentence
+
+from app import main
 
 router = APIRouter()
 
 class InputText(BaseModel):
     text: str
 
-async def predict_summary(text: str) -> str:
+async def predict_summary(text: str, summarizer_transformer: TransformerSummarizer) -> str:
     summary = ''.join(summarizer_transformer(text, min_length=60))
     return summary
 
-async def predict_sentiment(text: str):
+async def predict_sentiment(text: str, sentiment_classifier: Classifier):
     
     sentence = Sentence(text)
 
@@ -30,7 +26,7 @@ async def predict_sentiment(text: str):
 
     return sentence.labels[0].value
 
-async def predict_topics(text: str):
+async def predict_topics(text: str, topic_labels_classifier: Classifier):
 
     sentence = Sentence(text)
 
@@ -47,17 +43,22 @@ async def predict_topics(text: str):
 
     return topic_labels, topics, labels
 
-async def process_predictions(text):
+async def process_predictions(
+        text: str,
+        summarizer_transformer: TransformerSummarizer,
+        sentiment_classifier: Classifier,
+        topic_labels_classifier: Classifier,
+    ):
     tasks = []
     results = []
 
-    task = asyncio.create_task(predict_summary(text))
+    task = asyncio.create_task(predict_summary(text, summarizer_transformer))
     tasks.append(task)
 
-    task = asyncio.create_task(predict_sentiment(text))
+    task = asyncio.create_task(predict_sentiment(text, sentiment_classifier))
     tasks.append(task)
 
-    task = asyncio.create_task(predict_topics(text))
+    task = asyncio.create_task(predict_topics(text, topic_labels_classifier))
     tasks.append(task)
     
     # Await the completion of all tasks
@@ -66,7 +67,12 @@ async def process_predictions(text):
     return results
 
 @router.post("/")
-async def analyze(input_text: InputText):
+async def analyze(
+        input_text: InputText,
+        summarizer_transformer: TransformerSummarizer = Depends(lambda: main.summarizer_transformer),
+        sentiment_classifier: Classifier = Depends(lambda: main.sentiment_classifier),
+        topic_labels_classifier: Classifier = Depends(lambda: main.topic_labels_classifier),
+    ):
 
     # Measure execution time without concurrency
     # start_time = time.time()
@@ -80,7 +86,12 @@ async def analyze(input_text: InputText):
     # Measure execution time with concurrency
     start_time = time.time()
     
-    results = await process_predictions(input_text.text)
+    results = await process_predictions(
+        input_text.text,
+        summarizer_transformer,
+        sentiment_classifier,
+        topic_labels_classifier,
+    )
     # for value in results:
     #     print(f"Value: {value}")
     summary = results[0]
