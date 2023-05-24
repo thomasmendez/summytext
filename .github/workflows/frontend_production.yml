@@ -56,10 +56,9 @@ jobs:
         run: |
           chmod +x "${GITHUB_WORKSPACE}/frontend/env.sh"
           sh ${GITHUB_WORKSPACE}/frontend/env.sh
-        shell: bash
 
       - name: Navigate to 'frontend' directory
-        run: cd frontend
+        run: cd ${GITHUB_WORKSPACE}/frontend
 
       - name: Install Packages
         run: yarn install --immutable
