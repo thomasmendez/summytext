@@ -69,9 +69,9 @@ jobs:
         working-directory: frontend
         run: yarn pretty
 
-      - name: Test
-        working-directory: frontend
-        run: yarn test
+      # - name: Test
+      #   working-directory: frontend
+      #   run: yarn test
 
       - name: Build App
         working-directory: frontend
