@@ -1,0 +1,119 @@
+name: Frontend - Production.yml CI
+on: workflow_dispatch
+
+jobs:
+  pre_build:
+    runs-on: ubuntu-latest
+    env:
+      AWS_BUCKET_NAME: summytext.com
+      DIST_NAME: dist-prd
+      DIST_PATH: frontend/dist/
+      DIST_NAME_STORYBOOK: storybook-static-prd
+      DIST_PATH_STORYBOOK: frontend/storybook-static/
+      DOMAIN: summytext.com
+      SUB_DOMAIN: storybook.summytext.com
+      # GOOGLE_ANALYTICS_TRACKING_ID: "G-F3FRT10ZSD"
+    outputs:
+      AWS_BUCKET_NAME: ${{ steps.bucket_name.outputs.bucket }}
+      AWS_BUCKET_NAME_STORYBOOK: ${{ steps.bucket_name_storybook.outputs.storybook }}
+      DIST_NAME: ${{ env.DIST_NAME }}
+      DIST_PATH: ${{ env.DIST_PATH }}
+      DIST_NAME_STORYBOOK: ${{ env.DIST_NAME_STORYBOOK }}
+      DIST_PATH_STORYBOOK: ${{ env.DIST_PATH_STORYBOOK }}
+      DOMAIN: ${{ env.DOMAIN }}
+      SUB_DOMAIN: ${{ env.SUB_DOMAIN }}
+      # GOOGLE_ANALYTICS_TRACKING_ID: ${{ env.GOOGLE_ANALYTICS_TRACKING_ID }}
+    steps:
+      - name: "Create bucket_name Output"
+        id: bucket_name
+        run: |
+          bucket_name=$(echo ${{ env.AWS_BUCKET_NAME }})
+          echo "bucket=$bucket_name" >> $GITHUB_OUTPUT
+
+      - name: "Create bucket_name_storybook Output"
+        id: bucket_name_storybook
+        run: |
+          storybook=$(echo storybook.${{ steps.bucket_name.outputs.bucket }})
+          echo "storybook=$storybook" >> $GITHUB_OUTPUT
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # STORYBOOK_URL: http://${{ needs.pre_build.outputs.AWS_BUCKET_NAME_STORYBOOK }}.s3-website.us-east-2.amazonaws.com
+      # GOOGLE_ANALYTICS_TRACKING_ID: ${{ needs.pre_build.outputs.GOOGLE_ANALYTICS_TRACKING_ID }}
+      SUM_MY_TEXT_SERVICE: https://summytext.com/v1/predict # api must be provisioned before frontend is built
+    needs: pre_build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Navigate to 'frontend' directory
+        run: cd frontend
+
+      - name: Install Packages
+        run: yarn install --immutable
+
+      - name: Create .env
+        run: |
+          chmod +x "${GITHUB_WORKSPACE}/frontend/env.sh"
+          sh ${GITHUB_WORKSPACE}/frontend/env.sh
+        shell: bash
+
+      - name: ESLint
+        run: yarn lint
+
+      - name: Prettier
+        run: yarn pretty
+
+      - name: Test
+        run: yarn test
+
+      - name: Build App
+        run: yarn run build
+
+      - name: Create dist Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ needs.pre_build.outputs.DIST_NAME }}
+          path: ${{ needs.pre_build.outputs.DIST_PATH }}
+
+      - name: Build Storybook
+        run: yarn build-storybook
+
+      - name: Create storybook-static Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ needs.pre_build.outputs.DIST_NAME_STORYBOOK }}
+          path: ${{ needs.pre_build.outputs.DIST_PATH_STORYBOOK }}
+
+  deploy:
+    needs: [pre_build, build]
+    uses: thomasmendez/workflows/.github/workflows/s3_spa_prd_deployment.yml@main
+    with:
+      AWS_BUCKET_NAME: ${{ needs.pre_build.outputs.AWS_BUCKET_NAME }}
+      DIST_NAME: ${{ needs.pre_build.outputs.DIST_NAME }}
+      DIST_PATH: ${{ needs.pre_build.outputs.DIST_PATH }}
+      DOMAIN: ${{ needs.pre_build.outputs.DOMAIN }}
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy_storybook:
+    needs: [pre_build, build]
+    uses: thomasmendez/workflows/.github/workflows/s3_spa_prd_deployment.yml@main
+    with:
+      AWS_BUCKET_NAME: ${{ needs.pre_build.outputs.AWS_BUCKET_NAME_STORYBOOK }}
+      DIST_NAME: ${{ needs.pre_build.outputs.DIST_NAME_STORYBOOK }}
+      DIST_PATH: ${{ needs.pre_build.outputs.DIST_PATH_STORYBOOK }}
+      DOMAIN: ${{ needs.pre_build.outputs.DOMAIN }}
+      SUB_DOMAIN: ${{ needs.pre_build.outputs.SUB_DOMAIN }}
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

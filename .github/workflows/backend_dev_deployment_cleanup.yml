@@ -1,0 +1,50 @@
+name: Backend Development.yml Cleanup CI
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  pre_destroy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_BUCKET_NAME: summytext-api-dev
+      DIST_NAME: function-dev
+      DIST_PATH: function.zip
+      AWS_LAMBDA_FUNCTION_S3_KEY: function.zip
+      AWS_LAMBDA_FUNCTION_NAME: summytext-api-dev
+      AWS_LAMBDA_FUNCTION_HANDLER: app.main.handler
+      AWS_LAMBDA_FUNCTION_RUNTIME: python3.9
+    outputs:
+      AWS_BUCKET_NAME: ${{ steps.bucket_name.outputs.bucket }}
+      DIST_NAME: ${{ env.DIST_NAME }}
+      DIST_PATH: ${{ env.DIST_PATH }}
+      AWS_LAMBDA_FUNCTION_S3_KEY: ${{ env.AWS_LAMBDA_FUNCTION_S3_KEY }}
+      AWS_LAMBDA_FUNCTION_NAME: ${{ env.AWS_LAMBDA_FUNCTION_NAME }}
+      AWS_LAMBDA_FUNCTION_HANDLER: ${{ env.AWS_LAMBDA_FUNCTION_HANDLER }}
+      AWS_LAMBDA_FUNCTION_RUNTIME: ${{ env.AWS_LAMBDA_FUNCTION_RUNTIME }}
+    steps:
+      - name: "Create bucket_name_suffix Output"
+        id: bucket_name_suffix
+        run: |
+          suffix=$(echo ${{ github.head_ref }} | sed 's/\//-/')
+          echo "suffix=$suffix" >> $GITHUB_OUTPUT
+
+      - name: "Create bucket_name Output"
+        id: bucket_name
+        run: |
+          bucket_name=$(echo ${{ env.AWS_BUCKET_NAME }}-${{ steps.bucket_name_suffix.outputs.suffix }})
+          echo "bucket=$bucket_name" >> $GITHUB_OUTPUT
+          
+  destroy:
+    needs: pre_destroy
+    uses: thomasmendez/workflows/.github/workflows/s3_lambda_dev_deployment_cleanup.yml@main
+    with:
+      AWS_BUCKET_NAME: ${{ needs.pre_destroy.outputs.AWS_BUCKET_NAME }}
+      AWS_LAMBDA_FUNCTION_S3_KEY: ${{ needs.pre_destroy.outputs.AWS_LAMBDA_FUNCTION_S3_KEY }}
+      AWS_LAMBDA_FUNCTION_NAME: ${{ needs.pre_destroy.outputs.AWS_LAMBDA_FUNCTION_NAME }}
+      AWS_LAMBDA_FUNCTION_HANDLER: ${{ needs.pre_destroy.outputs.AWS_LAMBDA_FUNCTION_HANDLER }}
+      AWS_LAMBDA_FUNCTION_RUNTIME: ${{ needs.pre_destroy.outputs.AWS_LAMBDA_FUNCTION_RUNTIME }}
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
