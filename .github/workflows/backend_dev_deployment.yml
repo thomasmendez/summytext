@@ -77,7 +77,7 @@ jobs:
           ECR_REPOSITORY: summytext-backend
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker -t docker.io/summytext/backend:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag docker.io/summytext/backend:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   #     - name: Install dependencies
