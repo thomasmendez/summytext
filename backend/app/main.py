@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-# os.environ['HF_HOME'] = './transformers/cache/'
+os.environ['HF_HOME'] = './transformers/cache/'
 
 from summarizer import TransformerSummarizer
 from flair.nn import Classifier
