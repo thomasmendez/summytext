@@ -44,6 +44,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Add Environment Variables
+        working-directory: backend
+        run: |
+          echo "ENV=dev" > ./app/.env
+
       - name: Build Docker Container
         working-directory: backend
         run: |
