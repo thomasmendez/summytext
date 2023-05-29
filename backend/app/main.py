@@ -3,7 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-os.environ['HF_HOME'] = './transformers/cache/'
+load_dotenv()
+env = os.getenv('ENV')
+
+if env != None and env != 'local':
+    os.environ['HF_HOME'] = './temp/transformers/cache/'
 
 from summarizer import TransformerSummarizer
 from flair.nn import Classifier
@@ -15,15 +19,11 @@ topic_labels_classifier = Classifier.load('ner-ontonotes-large')
 from app.api.api_v1.api import router as api_router
 from mangum import Mangum
 
-load_dotenv()
-env = os.getenv('ENV')
-
 app = FastAPI()
 
 origins = []
 
 if env != None and env != 'local':
-    print(env)
     app.root_path = f'/{env}'
 
 if env == 'local':
