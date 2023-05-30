@@ -7,8 +7,9 @@ load_dotenv()
 env = os.getenv('ENV')
 
 if env != None and env != 'local':
-    os.environ['HF_HOME'] = './tmp'
-    os.environ['TRANSFORMERS_CACHE'] = './tmp/transformers/cache/'
+    root_dir = os.path.abspath('/')
+    os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
+    os.environ['TRANSFORMERS_CACHE'] = os.path.join(root_dir, './tmp/transformers/cache/')
 
 from summarizer import TransformerSummarizer
 from flair.nn import Classifier
