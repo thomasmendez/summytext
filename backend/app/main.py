@@ -6,8 +6,9 @@ import os
 load_dotenv()
 env = os.getenv('ENV')
 import flair
+from pathlib import Path
 
-if env != None and env != 'local':
+if env != None and env != 'loca':
     root_dir = os.path.abspath('/')
     # root_dir = os.environ['LAMBDA_TASK_ROOT']
     os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
@@ -16,7 +17,6 @@ if env != None and env != 'local':
     flair.cache_root = Path(os.environ['FLAIR_CACHE_ROOT'])
 
 from summarizer import TransformerSummarizer
-from pathlib import Path
 from flair.nn import Classifier
 
 summarizer_transformer = TransformerSummarizer(transformer_type='GPT2',transformer_model_key='gpt2-medium')
