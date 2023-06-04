@@ -6,7 +6,7 @@ import os
 load_dotenv()
 env = os.getenv('ENV')
 
-if env != None and env != 'local':
+if env != None and env != 'loca':
     root_dir = os.path.abspath('/')
     os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
     os.environ['TRANSFORMERS_CACHE'] = os.path.join(root_dir, './tmp/transformers/cache/')
