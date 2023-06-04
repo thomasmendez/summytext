@@ -5,16 +5,16 @@ import os
 
 load_dotenv()
 env = os.getenv('ENV')
+
 import flair
 from pathlib import Path
 
 if env != None and env != 'local':
     root_dir = os.path.abspath('/')
-    # root_dir = os.environ['LAMBDA_TASK_ROOT']
     os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
     os.environ['TRANSFORMERS_CACHE'] = os.path.join(root_dir, './tmp/transformers/cache/')
-    os.environ['FLAIR_CACHE_ROOT'] = os.path.join(root_dir, './tmp/.flair')
-    flair.cache_root = Path(os.environ['FLAIR_CACHE_ROOT'])
+    # os.environ['FLAIR_CACHE_ROOT'] = os.path.join(root_dir, './tmp/.flair')
+    flair.cache_root = Path(os.path.join(root_dir, './tmp/.flair'))
 
 from summarizer import TransformerSummarizer
 from flair.nn import Classifier
