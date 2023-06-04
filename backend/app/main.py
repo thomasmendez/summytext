@@ -8,7 +8,7 @@ env = os.getenv('ENV')
 import flair
 from pathlib import Path
 
-if env != None and env != 'loca':
+if env != None and env != 'local':
     root_dir = os.path.abspath('/')
     # root_dir = os.environ['LAMBDA_TASK_ROOT']
     os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
