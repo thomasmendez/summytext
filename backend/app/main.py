@@ -5,25 +5,21 @@ import os
 
 load_dotenv()
 env = os.getenv('ENV')
-
 import flair
 from pathlib import Path
 
 if env != None and env != 'local':
-    root_dir = os.path.abspath('/')
-    os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
-    os.environ['TRANSFORMERS_CACHE'] = os.path.join(root_dir, './tmp/transformers/cache/')
-    
+    # root_dir = os.path.abspath('/')
+    # root_dir = os.environ['LAMBDA_TASK_ROOT']
+    # os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
+    os.environ['TRANSFORMERS_CACHE'] = '/tmp/transformers/cache/'
+    os.environ['FLAIR_CACHE_ROOT'] = '/tmp/.flair'
+    flair.cache_root = Path(os.environ['FLAIR_CACHE_ROOT'])
+
 from summarizer import TransformerSummarizer
-
-summarizer_transformer = TransformerSummarizer(transformer_type='GPT2',transformer_model_key='gpt2-medium')
-
 from flair.nn import Classifier
 
-if env != None and env != 'local':
-    root_dir = os.path.abspath('/')
-    flair.cache_root = Path(os.path.join(root_dir, './tmp/.flair'))
-
+summarizer_transformer = TransformerSummarizer(transformer_type='GPT2',transformer_model_key='gpt2-medium')
 sentiment_classifier = Classifier.load('sentiment')
 topic_labels_classifier = Classifier.load('ner-ontonotes-large')
 
