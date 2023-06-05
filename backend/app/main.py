@@ -9,12 +9,8 @@ import flair
 from pathlib import Path
 
 if env != None and env != 'local':
-    # root_dir = os.path.abspath('/')
-    # root_dir = os.environ['LAMBDA_TASK_ROOT']
-    # os.environ['HF_HOME'] = os.path.join(root_dir, './tmp')
     os.environ['TRANSFORMERS_CACHE'] = '/tmp/transformers/cache/'
-    os.environ['FLAIR_CACHE_ROOT'] = '/tmp/.flair'
-    flair.cache_root = Path(os.environ['FLAIR_CACHE_ROOT'])
+    flair.cache_root = Path('/tmp/.flair')
 
 from summarizer import TransformerSummarizer
 from flair.nn import Classifier
