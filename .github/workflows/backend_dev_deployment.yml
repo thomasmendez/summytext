@@ -54,16 +54,16 @@ jobs:
         run: |
           docker build -t docker.io/summytext/backend:${{ github.sha }} .
 
-      # - name: Run Trivy Vulnerability Scanner
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: 'docker.io/summytext/backend:${{ github.sha }}'
-      #     format: 'table'
-      #     exit-code: '1'
-      #     ignore-unfixed: true
-      #     vuln-type: 'os,library'
-      #     severity: 'CRITICAL,HIGH'
-      #     timeout: '10m'
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/summytext/backend:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          timeout: '10m'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -79,67 +79,8 @@ jobs:
       - name: Tag and Push Image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: summytext-backend
+          ECR_REPOSITORY: summytext-backend-dev
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker tag docker.io/summytext/backend:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-  #     - name: Install dependencies
-  #       working-directory: backend
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install flake8 pytest
-  #         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      
-  #     - name: Lint with flake8
-  #       working-directory: backend
-  #       run: |
-  #         # stop the build if there are Python syntax errors or undefined names
-  #         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-  #         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-  #         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-  #     - name: Make Virtual Environment
-  #       working-directory: backend
-  #       run: |
-  #         pip install --upgrade pip
-  #         python3 -m venv env
-  #         source env/bin/activate
-  #         echo "VIRTUAL ENV:" $VIRTUAL_ENV
-
-  #     - name: Install zip
-  #       uses: montudor/action-zip@v1
-
-  #     - name: Zip output
-  #       run: |
-  #         cd /home/runner/.local/lib/python3.10/site-packages
-  #         zip -r function.zip .
-  #         mv function.zip /home/runner/work/summytext/summytext/backend
-  #         cd
-  #         cd ./work/summytext/summytext/backend
-  #         echo "ENV=dev" > ./app/.env
-  #         zip -g function.zip -r ./app
-
-  #     - name: Create dist Artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: ${{ needs.pre_build.outputs.DIST_NAME }}
-  #         path: ${{ needs.pre_build.outputs.DIST_PATH }}
-  #         retention-days: 1
-          
-  # deploy:
-  #   needs: [pre_build, build]
-  #   uses: thomasmendez/workflows/.github/workflows/s3_lamda_dev_deployment.yml@main
-  #   with:
-  #     AWS_BUCKET_NAME: ${{ needs.pre_build.outputs.AWS_BUCKET_NAME }}
-  #     DIST_NAME: ${{ needs.pre_build.outputs.DIST_NAME }}
-  #     DIST_PATH: ${{ needs.pre_build.outputs.DIST_PATH }}
-  #     AWS_LAMBDA_FUNCTION_S3_KEY: ${{ needs.pre_build.outputs.AWS_LAMBDA_FUNCTION_S3_KEY }}
-  #     AWS_LAMBDA_FUNCTION_NAME: ${{ needs.pre_build.outputs.AWS_LAMBDA_FUNCTION_NAME }}
-  #     AWS_LAMBDA_FUNCTION_HANDLER: ${{ needs.pre_build.outputs.AWS_LAMBDA_FUNCTION_HANDLER }}
-  #     AWS_LAMBDA_FUNCTION_RUNTIME: ${{ needs.pre_build.outputs.AWS_LAMBDA_FUNCTION_RUNTIME }}
-  #   secrets:
-  #     TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
