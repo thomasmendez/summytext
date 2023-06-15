@@ -30,6 +30,7 @@ if env != None and env != 'local':
     app.root_path = f'/{env}'
 
 if env == 'local' or env == 'dev':
+    origins.append('http://localhost')
     origins.append('http://localhost:8080')
 
 if env == 'stg':
