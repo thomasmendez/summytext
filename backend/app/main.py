@@ -29,9 +29,14 @@ origins = []
 if env != None and env != 'local':
     app.root_path = f'/{env}'
 
-if env == 'local':
-    origins.append('http://localhost')
+if env == 'local' or env == 'dev':
     origins.append('http://localhost:8080')
+
+if env == 'stg':
+    origins.append('http://summytext-stg.s3-website.us-east-2.amazonaws.com')
+
+if env == 'prd':
+    origins.append('https://summytext.com')
 
 app.add_middleware(
     CORSMiddleware,

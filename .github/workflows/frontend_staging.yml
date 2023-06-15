@@ -43,7 +43,7 @@ jobs:
     env:
       # STORYBOOK_URL: http://${{ needs.pre_build.outputs.AWS_BUCKET_NAME_STORYBOOK }}.s3-website.us-east-2.amazonaws.com
       # GOOGLE_ANALYTICS_TRACKING_ID: ${{ needs.pre_build.outputs.GOOGLE_ANALYTICS_TRACKING_ID }}
-      SUM_MY_TEXT_SERVICE: https://summytext.com/v1/predict # api must be provisioned before frontend is built
+      SUM_MY_TEXT_SERVICE: https://mu1u6nzuda.execute-api.us-east-2.amazonaws.com/stg
     needs: pre_build
     steps:
       - name: Checkout
