@@ -1,0 +1,59 @@
+name: Backend - Development.yml CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - .github/**
+      - backend/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Add Environment Variables
+        working-directory: backend
+        run: |
+          echo "ENV=dev" > ./app/.env
+
+      - name: Build Docker Container
+        working-directory: backend
+        run: |
+          docker build -t docker.io/summytext/backend:${{ github.sha }} .
+
+      # - name: Run Trivy Vulnerability Scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: 'docker.io/summytext/backend:${{ github.sha }}'
+      #     format: 'table'
+      #     exit-code: '1'
+      #     ignore-unfixed: true
+      #     vuln-type: 'os,library'
+      #     severity: 'CRITICAL,HIGH'
+      #     timeout: '15m'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # TODO: Automate ECR Repository Maintantance / Creation
+
+      - name: Tag and Push Image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: summytext-backend-dev
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag docker.io/summytext/backend:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

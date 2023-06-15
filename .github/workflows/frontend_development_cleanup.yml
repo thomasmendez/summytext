@@ -1,0 +1,51 @@
+name: Frontend - Development.yml Cleanup CI
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  pre_destroy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_BUCKET_NAME: summytext-dev
+    outputs:
+      AWS_BUCKET_NAME: ${{ steps.bucket_name.outputs.bucket }}
+      AWS_BUCKET_NAME_STORYBOOK: ${{ steps.bucket_name_storybook.outputs.storybook }}
+    steps:
+      - name: "Create bucket_name_suffix Output"
+        id: bucket_name_suffix
+        run: |
+          suffix=$(echo ${{ github.head_ref }} | sed 's/\//-/')
+          echo "suffix=$suffix" >> $GITHUB_OUTPUT
+
+      - name: "Create bucket_name Output"
+        id: bucket_name
+        run: |
+          bucket_name=$(echo ${{ env.AWS_BUCKET_NAME }}-${{ steps.bucket_name_suffix.outputs.suffix }})
+          echo "bucket=$bucket_name" >> $GITHUB_OUTPUT
+
+      - name: "Create bucket_name_storybook Output"
+        id: bucket_name_storybook
+        run: |
+          storybook=$(echo ${{ steps.bucket_name.outputs.bucket }}-storybook)
+          echo "storybook=$storybook" >> $GITHUB_OUTPUT
+
+  destroy:
+    needs: pre_destroy
+    uses: thomasmendez/workflows/.github/workflows/s3_spa_dev_deployment_cleanup.yml@main
+    with:
+      AWS_BUCKET_NAME: ${{ needs.pre_destroy.outputs.AWS_BUCKET_NAME }}
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  destroy_storybook:
+    needs: pre_destroy
+    uses: thomasmendez/workflows/.github/workflows/s3_spa_dev_deployment_cleanup.yml@main
+    with:
+      AWS_BUCKET_NAME: ${{ needs.pre_destroy.outputs.AWS_BUCKET_NAME_STORYBOOK }}
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

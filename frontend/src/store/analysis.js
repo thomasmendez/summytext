@@ -8,6 +8,7 @@ export const analysisSlice = createSlice({
     reqBody: null,
     data: null,
     error: null,
+    previousText: null,
   },
   reducers: {
     handleTextFieldChange: (state, action) => {
@@ -16,6 +17,7 @@ export const analysisSlice = createSlice({
     performAnalysis: (state, action) => {
       state.isLoading = true;
       state.reqBody = action.payload;
+      state.previousText = action.payload;
     },
     completedAnalysis: (state, action) => {
       state.isLoading = false;

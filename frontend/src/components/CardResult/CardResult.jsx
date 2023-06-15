@@ -30,6 +30,7 @@ CardResult.propTypes = {
   content: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
+    PropTypes.objectOf(PropTypes.string),
   ]),
 };
 
