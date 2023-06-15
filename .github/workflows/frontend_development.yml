@@ -4,8 +4,9 @@ on:
     branches-ignore:
       - main
     paths:
+      - .github/workflows
       - frontend/**
-      
+
 jobs:
   pre_build:
     runs-on: ubuntu-latest
