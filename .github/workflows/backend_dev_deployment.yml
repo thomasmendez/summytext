@@ -4,39 +4,10 @@ on:
   push:
     branches-ignore:
       - main
+    paths:
+      - backend/**
 
 jobs:
-  pre_build:
-    runs-on: ubuntu-latest
-    env:
-      AWS_BUCKET_NAME: summytext-api-dev
-      DIST_NAME: function-dev
-      DIST_PATH: backend/function.zip
-      AWS_LAMBDA_FUNCTION_S3_KEY: function.zip
-      AWS_LAMBDA_FUNCTION_NAME: summytext-api-dev
-      AWS_LAMBDA_FUNCTION_HANDLER: app.main.handler
-      AWS_LAMBDA_FUNCTION_RUNTIME: python3.9
-    outputs:
-      AWS_BUCKET_NAME: ${{ steps.bucket_name.outputs.bucket }}
-      DIST_NAME: ${{ env.DIST_NAME }}
-      DIST_PATH: ${{ env.DIST_PATH }}
-      AWS_LAMBDA_FUNCTION_S3_KEY: ${{ env.AWS_LAMBDA_FUNCTION_S3_KEY }}
-      AWS_LAMBDA_FUNCTION_NAME: ${{ env.AWS_LAMBDA_FUNCTION_NAME }}
-      AWS_LAMBDA_FUNCTION_HANDLER: ${{ env.AWS_LAMBDA_FUNCTION_HANDLER }}
-      AWS_LAMBDA_FUNCTION_RUNTIME: ${{ env.AWS_LAMBDA_FUNCTION_RUNTIME }}
-    steps:
-      - name: "Create bucket_name_suffix Output"
-        id: bucket_name_suffix
-        run: |
-          suffix=$(echo ${{ github.ref_name }} | sed 's/\//-/')
-          echo "suffix=$suffix" >> $GITHUB_OUTPUT
-
-      - name: "Create bucket_name Output"
-        id: bucket_name
-        run: |
-          bucket_name=$(echo ${{ env.AWS_BUCKET_NAME }}-${{ steps.bucket_name_suffix.outputs.suffix }})
-          echo "bucket=$bucket_name" >> $GITHUB_OUTPUT
-
   build:
     runs-on: ubuntu-latest
     needs: pre_build
@@ -75,6 +46,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      # TODO: Automate ECR Repository Maintantance / Creation
 
       - name: Tag and Push Image to Amazon ECR
         env:
