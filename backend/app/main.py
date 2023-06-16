@@ -33,6 +33,15 @@ if env == 'local':
     origins.append('http://localhost')
     origins.append('http://localhost:8080')
 
+if env == 'dev':
+    origins.append('*')
+
+if env == 'stg':
+    origins.append('http://summytext-stg.s3-website.us-east-2.amazonaws.com')
+
+if env == 'prd':
+    origins.append('https://summytext.com')
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
