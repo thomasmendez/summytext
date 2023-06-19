@@ -9,11 +9,15 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
   },
+  watchOptions: {
+    aggregateTimeout: 10000,
+  },
   devServer: {
     port: 8080,
     hot: true,
     open: true,
-    watchFiles: ['src/**/*.js', 'src/**/*.jsx'],
+    historyApiFallback: true,
+    watchFiles: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*'],
     devMiddleware: {
       writeToDisk: true,
     },
