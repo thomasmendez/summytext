@@ -5,7 +5,17 @@ import { Grid, Typography } from '@mui/material';
 const Footer = (props) => {
   const { pb, pt } = props;
   return (
-    <Grid container sx={{ borderTop: 'solid 1px gray' }} direction="row" textAlign="center" pb={pb} pt={pt}>
+    <Grid
+      className="Home"
+      container
+      item
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      spacing={3}
+      style={{ backgroundColor: 'lavender'}}
+      sx={{ borderTop: 'solid 1px gray' }} direction="row" pb={pb} pt={pt}
+    >
       <Grid item xs={12}>
         <Typography>
           ©

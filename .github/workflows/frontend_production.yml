@@ -12,7 +12,7 @@ jobs:
       DIST_PATH_STORYBOOK: frontend/storybook-static/
       DOMAIN: summytext.com
       SUB_DOMAIN: storybook.summytext.com
-      # GOOGLE_ANALYTICS_TRACKING_ID: "G-F3FRT10ZSD"
+      GOOGLE_ANALYTICS_TRACKING_ID: "G-3KXL1MQZ2S"
     outputs:
       AWS_BUCKET_NAME: ${{ steps.bucket_name.outputs.bucket }}
       AWS_BUCKET_NAME_STORYBOOK: ${{ steps.bucket_name_storybook.outputs.storybook }}
@@ -22,7 +22,7 @@ jobs:
       DIST_PATH_STORYBOOK: ${{ env.DIST_PATH_STORYBOOK }}
       DOMAIN: ${{ env.DOMAIN }}
       SUB_DOMAIN: ${{ env.SUB_DOMAIN }}
-      # GOOGLE_ANALYTICS_TRACKING_ID: ${{ env.GOOGLE_ANALYTICS_TRACKING_ID }}
+      GOOGLE_ANALYTICS_TRACKING_ID: ${{ env.GOOGLE_ANALYTICS_TRACKING_ID }}
     steps:
       - name: "Create bucket_name Output"
         id: bucket_name
@@ -39,8 +39,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      # STORYBOOK_URL: http://${{ needs.pre_build.outputs.AWS_BUCKET_NAME_STORYBOOK }}.s3-website.us-east-2.amazonaws.com
-      # GOOGLE_ANALYTICS_TRACKING_ID: ${{ needs.pre_build.outputs.GOOGLE_ANALYTICS_TRACKING_ID }}
+      STORYBOOK_URL: http://${{ needs.pre_build.outputs.SUB_DOMAIN }}
+      GOOGLE_ANALYTICS_TRACKING_ID: ${{ needs.pre_build.outputs.GOOGLE_ANALYTICS_TRACKING_ID }}
       SUM_MY_TEXT_SERVICE: https://6vahuhwuj2.execute-api.us-east-2.amazonaws.com/prd
     needs: pre_build
     steps:
