@@ -8,6 +8,8 @@ const PDFJS = require('pdfjs-dist/webpack');
 
 /* eslint-disable react/jsx-child-element-spacing */
 
+const characterLimit = 5000;
+
 const handleFileChange = async (event) => {
   const file = event.target.files[0];
   const fileData = await readFileAsArrayBuffer(file);
@@ -23,7 +25,13 @@ const handleFileChange = async (event) => {
     extractedText += pageText;
   }
 
-  return extractedText;
+  var truncatedText = extractedText.substring(0, characterLimit);
+
+  if (extractedText.length > characterLimit) {
+    truncatedText += '...';
+  }
+
+  return truncatedText;
 };
 
 const readFileAsArrayBuffer = (file) => {
