@@ -55,6 +55,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@storybook/testing-library", "npm:0.0.13"],
             ["@testing-library/react", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:12.1.5"],
             ["axios", "npm:1.2.0"],
+            ["axios-retry", "npm:3.5.0"],
             ["babel-eslint", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:10.1.0"],
             ["babel-loader", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:8.3.0"],
             ["babel-preset-es2015", "npm:6.24.1"],
@@ -4120,6 +4121,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.20.1-8f9256f2ed-00567a333d.zip/node_modules/@babel/runtime/",
           "packageDependencies": [
             ["@babel/runtime", "npm:7.20.1"],
+            ["regenerator-runtime", "npm:0.13.11"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:7.22.5", {
+          "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.22.5-0a6711d04c-12a50b7de2.zip/node_modules/@babel/runtime/",
+          "packageDependencies": [
+            ["@babel/runtime", "npm:7.22.5"],
             ["regenerator-runtime", "npm:0.13.11"]
           ],
           "linkType": "HARD",
@@ -9909,6 +9918,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["follow-redirects", "virtual:ad83373c576d1ec934282a13f66809fa288662605b40fc7939f526ec9fb954a8b1509c176843fa07b0611590730dbbe4c687048f32f2c69dd2b3d5bef3b37792#npm:1.15.2"],
             ["form-data", "npm:4.0.0"],
             ["proxy-from-env", "npm:1.1.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["axios-retry", [
+        ["npm:3.5.0", {
+          "packageLocation": "./.yarn/cache/axios-retry-npm-3.5.0-870d48767b-db8391bcda.zip/node_modules/axios-retry/",
+          "packageDependencies": [
+            ["axios-retry", "npm:3.5.0"],
+            ["@babel/runtime", "npm:7.22.5"],
+            ["is-retry-allowed", "npm:2.2.0"]
           ],
           "linkType": "HARD",
         }]
@@ -16699,6 +16719,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["is-retry-allowed", [
+        ["npm:2.2.0", {
+          "packageLocation": "./.yarn/cache/is-retry-allowed-npm-2.2.0-b4b58fc581-3d1103a929.zip/node_modules/is-retry-allowed/",
+          "packageDependencies": [
+            ["is-retry-allowed", "npm:2.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["is-set", [
         ["npm:2.0.2", {
           "packageLocation": "./.yarn/cache/is-set-npm-2.0.2-7e9ba84a8c-b64343faf4.zip/node_modules/is-set/",
@@ -21006,6 +21035,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@storybook/testing-library", "npm:0.0.13"],
             ["@testing-library/react", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:12.1.5"],
             ["axios", "npm:1.2.0"],
+            ["axios-retry", "npm:3.5.0"],
             ["babel-eslint", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:10.1.0"],
             ["babel-loader", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:8.3.0"],
             ["babel-preset-es2015", "npm:6.24.1"],
