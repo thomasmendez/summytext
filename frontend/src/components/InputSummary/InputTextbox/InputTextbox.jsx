@@ -6,6 +6,7 @@ import { useSpeechRecognition } from 'react-speech-recognition';
 import PropTypes from 'prop-types';
 import { Card, CardContent, CardActions, TextField } from '@mui/material';
 import SpeechToTextButton from './SpeechToTextButton';
+import PdfToTextButton from './PdfToTextButton';
 import SubmitButton from './SubmitButton';
 
 const InputTextbox = (props) => {
@@ -32,7 +33,8 @@ const InputTextbox = (props) => {
         />
       </CardContent>
       <CardActions>
-        {browserSupportsSpeechRecognition && (<SpeechToTextButton/>)}
+        {/* {browserSupportsSpeechRecognition && (<SpeechToTextButton/>)} */}
+        <PdfToTextButton/>
         <SubmitButton initialIsLoading={false}/>
       </CardActions>
     </Card>
