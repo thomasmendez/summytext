@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import 'regenerator-runtime/runtime';
 import { Button } from '@mui/material';
@@ -40,7 +40,7 @@ const PdfToTextButton = () => {
   const dispatch = useDispatch();
 
   return(
-    <Button fullWidth variant="contained" component="label" color="success" size="large">
+    <Button fullWidth variant="contained" component="label" color="primary" size="large">
       PDF to Text
       <input
         hidden
