@@ -27,7 +27,7 @@ app = FastAPI()
 
 origins = []
 
-if env != None and env != 'local' and proxy == 'true':
+if (env != None and env != 'local') and (proxy != None and proxy == 'true'):
     app.root_path = f'/{env}'
 
 if env == 'local':
