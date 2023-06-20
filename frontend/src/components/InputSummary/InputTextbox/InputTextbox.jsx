@@ -29,6 +29,7 @@ const InputTextbox = (props) => {
           value={text || previousText || ''}
           inputRef={input => input && input.focus()}
           InputLabelProps={{ shrink: true }}
+          inputProps={{ maxLength: 5000 }}
           onChange={(e) => dispatch(analysisActions.handleTextFieldChange(e.target.value))}
         />
       </CardContent>

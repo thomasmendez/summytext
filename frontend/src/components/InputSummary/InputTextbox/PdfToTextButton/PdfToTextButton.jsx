@@ -1,12 +1,14 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import 'regenerator-runtime/runtime';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { analysisActions } from '../../../../store/analysis';
 
 const PDFJS = require('pdfjs-dist/webpack');
 
 /* eslint-disable react/jsx-child-element-spacing */
+
+const characterLimit = 5000;
 
 const handleFileChange = async (event) => {
   const file = event.target.files[0];
@@ -23,7 +25,13 @@ const handleFileChange = async (event) => {
     extractedText += pageText;
   }
 
-  return extractedText;
+  var truncatedText = extractedText.substring(0, characterLimit);
+
+  if (extractedText.length > characterLimit) {
+    truncatedText += '...';
+  }
+
+  return truncatedText;
 };
 
 const readFileAsArrayBuffer = (file) => {
@@ -40,21 +48,23 @@ const PdfToTextButton = () => {
   const dispatch = useDispatch();
 
   return(
-    <Button fullWidth variant="contained" component="label" color="primary" size="large">
-      PDF to Text
-      <input
-        hidden
-        accept="application/pdf"
-        type="file"
-        onChange={(e) => {
-            handleFileChange(e).then((text) => {
-              dispatch(analysisActions.handleTextFieldChange(text));
-            }).catch((err) => {
-              console.error(err);
-            });
-        }}
-      />
-    </Button>
+    <Tooltip title="Extracts first 5000 characters from PDF (approx. 1 page, 12-pt font)" placement="bottom">
+      <Button fullWidth variant="contained" component="label" color="primary" size="large">
+        PDF to Text
+        <input
+          hidden
+          accept="application/pdf"
+          type="file"
+          onChange={(e) => {
+              handleFileChange(e).then((text) => {
+                dispatch(analysisActions.handleTextFieldChange(text));
+              }).catch((err) => {
+                console.error(err);
+              });
+          }}
+        />
+      </Button>
+    </Tooltip>
   );
 };
 
