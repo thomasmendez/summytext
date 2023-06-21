@@ -16,12 +16,21 @@ function Home(props) {
   const text = useSelector((state) => state.analysis.text);
   const data = useSelector((state) => state.analysis.data);
   const error = useSelector((state) => state.analysis.error);
+  const info = useSelector((state) => state.analysis.info);
 
   useEffect(() => {
     if (isLoading) {
+      let takingTooLongTimer = setInterval(() => {
+        dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
+      }, 7000);
+
       performAnalysis(text).then(res => {
+        clearInterval(takingTooLongTimer);
+        dispatch(analysisActions.clearInfoAnalysis());
         dispatch(analysisActions.completedAnalysis(res.data));
       }).catch(err => {
+        clearInterval(takingTooLongTimer);
+        dispatch(analysisActions.clearInfoAnalysis());
         if (err.response) {
           // Request made and server responded
           console.error(err.response.data);
@@ -53,16 +62,16 @@ function Home(props) {
       style={{ backgroundColor: 'lavender'}}
     >
       <Snackbar
-        open={error ? true : false}
+        open={(error || info) ? true : false}
         autoHideDuration={6000}
-        onClose={() => dispatch(analysisActions.clearErrorAnalysis())}
+        onClose={() => error ? dispatch(analysisActions.clearErrorAnalysis()) : dispatch(analysisActions.clearInfoAnalysis())}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'center',
         }}
       >
-        <Alert variant="filled" severity="error" sx={{ width: '100%' }} onClose={() => dispatch(analysisActions.clearErrorAnalysis())}>
-          {error}
+        <Alert variant="filled" severity={error ? 'error' : 'info'} sx={{ width: '100%' }} onClose={() => error ? dispatch(analysisActions.clearErrorAnalysis()) : dispatch(analysisActions.clearInfoAnalysis())}>
+          {error || info}
         </Alert>
       </Snackbar>
       <Grid item xs={12}>
