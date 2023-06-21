@@ -6,13 +6,9 @@ const baseUrl = process.env.SUM_MY_TEXT_SERVICE;
 const axiosInstance = axios.create();
 
 axiosRetry(axiosInstance, {
-  retries: 5, // Number of retries on failure
-  retryDelay: (retryCount) => {
-    return retryCount * 10000; // Delay between retries (in milliseconds)
-  },
+  retries: 10, 
   retryCondition: (error) => {
-    // Custom retry condition
-    return error.response && error.response.status >= 500; // Retry only for 5xx errors
+    return error.code === 'ERR_NETWORK';
   },
 });
 
