@@ -15,13 +15,13 @@ const Analysis = (props) => {
           <CardContent>
             <Grid container item xs={12} spacing={3}>
               <Grid container item xs={12}>
-                <CardResult title='Sentiment' content={sentiment} backgroundColor={'#b5ecf5'}/>
+                <CardResult title='Summarized Text' content={summary} backgroundColor={'#b5ecf5'}/>
               </Grid>
               <Grid container item xs={12}>
                 <CardResult title='Topics' content={topics} backgroundColor={'#b5ecf5'}/>
               </Grid>
               <Grid container item xs={12}>
-                <CardResult title='Summarized Text' content={summary} backgroundColor={'#b5ecf5'}/>
+                <CardResult title='Sentiment' content={sentiment} backgroundColor={'#b5ecf5'}/>
               </Grid>
             </Grid>
           </CardContent>

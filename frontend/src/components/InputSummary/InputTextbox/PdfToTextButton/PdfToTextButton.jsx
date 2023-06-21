@@ -10,6 +10,16 @@ const PDFJS = require('pdfjs-dist/webpack');
 
 const characterLimit = 5000;
 
+// function removeSpecialCharacters(str) {
+//   // Define the regular expression to match special characters
+//   var regex = /[•●○■‣|o✦✧✪✯★✱✲✴✶✷✸✹❖❥❦❧❂❈❉❊❋❍❏❐❑❒➔➜➝➞➟➠➡➢➣➤➥➦➧➨➩➪➫➬➭➮➯➱➲➳➳➴➵➶➷➸➹➺➻➼➽➾➔➜➝➞➟➠➡➢➣➤➥➦➧➨➩➪➫➬➭➮➯➱➲➳➳➴➵➶➷➸➹➺➻➼➽➾]/g;
+  
+//   // Replace the special characters with an empty string
+//   var result = str.replace(regex, '');
+  
+//   return result;
+// }
+
 const handleFileChange = async (event) => {
   const file = event.target.files[0];
   const fileData = await readFileAsArrayBuffer(file);
@@ -24,6 +34,8 @@ const handleFileChange = async (event) => {
     const pageText = content.items.map(item => item.str).join(' ');
     extractedText += pageText;
   }
+
+  // const cleanedText = removeSpecialCharacters(extractedText);
 
   var truncatedText = extractedText.substring(0, characterLimit);
 
