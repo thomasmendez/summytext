@@ -18,12 +18,18 @@ function Home(props) {
   const error = useSelector((state) => state.analysis.error);
   const info = useSelector((state) => state.analysis.info);
 
+  let takingTooLongTimer; 
+
   useEffect(() => {
     if (isLoading) {
-      let takingTooLongTimer = setInterval(() => {
+      takingTooLongTimer = setInterval(() => {
         dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
       }, 7000);
+    }
+  }, [isLoading]);
 
+  useEffect(() => {
+    if (isLoading) {
       performAnalysis(text).then(res => {
         clearInterval(takingTooLongTimer);
         dispatch(analysisActions.clearInfoAnalysis());
@@ -64,7 +70,11 @@ function Home(props) {
       <Snackbar
         open={(error || info) ? true : false}
         autoHideDuration={6000}
-        onClose={() => error ? dispatch(analysisActions.clearErrorAnalysis()) : dispatch(analysisActions.clearInfoAnalysis())}
+        onClose={() => {
+          clearInterval(takingTooLongTimer);
+          dispatch(analysisActions.clearErrorAnalysis());
+          dispatch(analysisActions.clearInfoAnalysis());
+        }}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'center',
