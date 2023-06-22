@@ -11,7 +11,8 @@ jobs:
       - name: Add Environment Variables
         working-directory: backend
         run: |
-          echo "ENV=prd" > ./app/.env
+          echo "ENV=prd" >> ./app/.env
+          echo "PROXY=true" >> ./app/.env
 
       - name: Build Docker Container
         working-directory: backend

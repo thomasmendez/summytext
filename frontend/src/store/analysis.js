@@ -7,6 +7,7 @@ export const analysisSlice = createSlice({
     isLoading: false,
     reqBody: null,
     data: null,
+    info: null,
     error: null,
     previousText: null,
   },
@@ -22,6 +23,12 @@ export const analysisSlice = createSlice({
     completedAnalysis: (state, action) => {
       state.isLoading = false;
       state.data = action.payload;
+    },
+    infoAnalysis: (state, action) => {
+      state.info = action.payload;
+    },
+    clearInfoAnalysis: (state) => {
+      state.info = null;
     },
     errorAnalysis: (state, action) => {
       state.isLoading = false;

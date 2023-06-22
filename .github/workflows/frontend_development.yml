@@ -49,7 +49,7 @@ jobs:
     env:
       STORYBOOK_URL: http://${{ needs.pre_build.outputs.AWS_BUCKET_NAME_STORYBOOK }}.s3-website.us-east-2.amazonaws.com
       GOOGLE_ANALYTICS_TRACKING_ID: ${{ needs.pre_build.outputs.GOOGLE_ANALYTICS_TRACKING_ID }}
-      SUM_MY_TEXT_SERVICE: https://5obiknsy5b.execute-api.us-east-2.amazonaws.com/dev
+      SUM_MY_TEXT_SERVICE: https://tezhjnqljj.execute-api.us-east-2.amazonaws.com/dev
     needs: pre_build
     steps:
       - name: Checkout

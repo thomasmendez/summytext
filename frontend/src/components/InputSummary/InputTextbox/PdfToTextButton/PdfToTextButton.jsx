@@ -14,7 +14,6 @@ const handleFileChange = async (event) => {
   const file = event.target.files[0];
   const fileData = await readFileAsArrayBuffer(file);
   const pdf = await PDFJS.getDocument(fileData).promise;
-  // Use the 'pdf' object for further operations, such as rendering pages
   const numPages = pdf.numPages;
   let extractedText = '';
 
