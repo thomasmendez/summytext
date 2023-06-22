@@ -69,7 +69,7 @@ function Home(props) {
     >
       <Snackbar
         open={(error || info) ? true : false}
-        autoHideDuration={6000}
+        autoHideDuration={info ? null : 6000}
         onClose={() => {
           clearInterval(takingTooLongTimer);
           dispatch(analysisActions.clearErrorAnalysis());
