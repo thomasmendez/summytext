@@ -39,9 +39,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      STORYBOOK_URL: http://${{ needs.pre_build.outputs.SUB_DOMAIN }}
+      STORYBOOK_URL: https://${{ needs.pre_build.outputs.SUB_DOMAIN }}
       GOOGLE_ANALYTICS_TRACKING_ID: ${{ needs.pre_build.outputs.GOOGLE_ANALYTICS_TRACKING_ID }}
-      SUM_MY_TEXT_SERVICE: https://6vahuhwuj2.execute-api.us-east-2.amazonaws.com/prd
+      SUM_MY_TEXT_SERVICE: https://ai.summytext.com
     needs: pre_build
     steps:
       - name: Checkout
