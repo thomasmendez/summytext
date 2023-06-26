@@ -13,7 +13,7 @@ axiosRetry(axiosInstance, {
 });
 
 export const performAnalysis = (text) => {
-    return axiosInstance.post(`${baseUrl}/api/v1/predict`, {
+    return axiosInstance.post(`${baseUrl}/api/v1/predict/`, {
         text,
     });
 };
