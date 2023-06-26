@@ -31,7 +31,6 @@ if (env != None and env != 'local') and (proxy != None and proxy == 'true'):
     app.root_path = f'/{env}'
 
 if env == 'local':
-    origins.append('http://localhost')
     origins.append('http://localhost:8080')
 
 if env == 'dev':
@@ -42,14 +41,6 @@ if env == 'stg':
 
 if env == 'prd':
     origins.append('https://summytext.com')
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*'],
-)
 
 from fastapi.responses import JSONResponse
 from cachetools import LRUCache
@@ -81,8 +72,10 @@ async def cache_requests(request, call_next):
 
             # If the elapsed time is less than an hour, return a rate limit error
             if elapsed_time < CACHE_EXPIRATION:
-                error_message = f"Rate limit exceeded. Maximum {RATE_LIMIT} requests per hour."
-                return JSONResponse(status_code=429, content={"error": error_message})
+                message = "Too many requests. Please try again later. You are only allowed to make a certain amount of request per hour."
+                error_message = f"Rate limit exceeded. For IP Address: {ip_address}. Total requests made in the past hour: {cache[ip_address]['request_count']}. Maximum {RATE_LIMIT} requests per hour."
+                print(error_message)
+                return JSONResponse(status_code=429, content={"message": message})
 
             # If an hour has passed, reset the request count and update the first access time
             cache[ip_address]["request_count"] = 1
@@ -109,6 +102,14 @@ async def clear_cache_periodically():
     while True:
         clear_expired_cache()
         await asyncio.sleep(CACHE_EXPIRATION)  # Run every hour
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 @app.on_event("startup")
 async def startup_event():

@@ -42,7 +42,7 @@ function Home(props) {
           console.error(err.response.data);
           console.error(err.response.status);
           console.error(err.response.headers);
-          dispatch(analysisActions.errorAnalysis(`${err.response.status} Error`));
+          dispatch(analysisActions.errorAnalysis(`${err.response.status} Error: ${err.response.data.message}`));
         } else if (err.request) {
           // The request was made but no response was received
           console.error(err.request);
@@ -69,7 +69,7 @@ function Home(props) {
     >
       <Snackbar
         open={(error || info) ? true : false}
-        autoHideDuration={info ? null : 6000}
+        autoHideDuration={info ? null : 10000}
         onClose={() => {
           clearInterval(takingTooLongTImer);
           dispatch(analysisActions.clearErrorAnalysis());
