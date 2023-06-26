@@ -17,27 +17,25 @@ function Home(props) {
   const data = useSelector((state) => state.analysis.data);
   const error = useSelector((state) => state.analysis.error);
   const info = useSelector((state) => state.analysis.info);
-
-  const [keepSnackbarOpen, setKeepSnackbarOpen] = useState(true);
-
-  let takingTooLongTimer; 
+  const [takingTooLongTImer, setTakingTooLongTImer] = useState();
 
   useEffect(() => {
-    if (isLoading && keepSnackbarOpen) {
-      takingTooLongTimer = setInterval(() => {
+    if (isLoading) {
+      const timer = setInterval(() => {
         dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
       }, 7000);
+      setTakingTooLongTImer(timer);
     }
-  }, [isLoading, keepSnackbarOpen]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (isLoading) {
       performAnalysis(text).then(res => {
-        clearInterval(takingTooLongTimer);
+        clearInterval(takingTooLongTImer);
         dispatch(analysisActions.clearInfoAnalysis());
         dispatch(analysisActions.completedAnalysis(res.data));
       }).catch(err => {
-        clearInterval(takingTooLongTimer);
+        clearInterval(takingTooLongTImer);
         dispatch(analysisActions.clearInfoAnalysis());
         if (err.response) {
           // Request made and server responded
@@ -56,7 +54,7 @@ function Home(props) {
         }
       });
     }
-  }, [isLoading]);
+  }, [isLoading, takingTooLongTImer]);
 
   return (
     <Grid
@@ -73,10 +71,9 @@ function Home(props) {
         open={(error || info) ? true : false}
         autoHideDuration={info ? null : 6000}
         onClose={() => {
-          clearInterval(takingTooLongTimer);
+          clearInterval(takingTooLongTImer);
           dispatch(analysisActions.clearErrorAnalysis());
           dispatch(analysisActions.clearInfoAnalysis());
-          setKeepSnackbarOpen(false);
         }}
         anchorOrigin={{
           vertical: 'top',
@@ -84,10 +81,9 @@ function Home(props) {
         }}
       >
         <Alert variant="filled" severity={error ? 'error' : 'info'} sx={{ width: '100%' }} onClose={() => {
-          clearInterval(takingTooLongTimer);
+          clearInterval(takingTooLongTImer);
           dispatch(analysisActions.clearErrorAnalysis());
           dispatch(analysisActions.clearInfoAnalysis());
-          setKeepSnackbarOpen(false);
         }}
         >
           {error || info}
