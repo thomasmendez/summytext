@@ -25,17 +25,13 @@ function Home(props) {
         dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
       }, 7000);
       setTakingTooLongTImer(timer);
-    }
-  }, [isLoading]);
 
-  useEffect(() => {
-    if (isLoading) {
       performAnalysis(text).then(res => {
-        clearInterval(takingTooLongTImer);
+        clearInterval(timer);
         dispatch(analysisActions.clearInfoAnalysis());
         dispatch(analysisActions.completedAnalysis(res.data));
       }).catch(err => {
-        clearInterval(takingTooLongTImer);
+        clearInterval(timer);
         dispatch(analysisActions.clearInfoAnalysis());
         if (err.response) {
           // Request made and server responded
@@ -54,7 +50,7 @@ function Home(props) {
         }
       });
     }
-  }, [isLoading, takingTooLongTImer]);
+  }, [isLoading]);
 
   return (
     <Grid
