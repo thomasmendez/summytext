@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { analysisActions } from '../store/analysis';
@@ -18,15 +18,17 @@ function Home(props) {
   const error = useSelector((state) => state.analysis.error);
   const info = useSelector((state) => state.analysis.info);
 
+  const [keepSnackbarOpen, setKeepSnackbarOpen] = useState(true);
+
   let takingTooLongTimer; 
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading && keepSnackbarOpen) {
       takingTooLongTimer = setInterval(() => {
         dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
       }, 7000);
     }
-  }, [isLoading]);
+  }, [isLoading, keepSnackbarOpen]);
 
   useEffect(() => {
     if (isLoading) {
@@ -54,7 +56,7 @@ function Home(props) {
         }
       });
     }
-  }, [dispatch, isLoading, text]);
+  }, [isLoading]);
 
   return (
     <Grid
@@ -74,13 +76,20 @@ function Home(props) {
           clearInterval(takingTooLongTimer);
           dispatch(analysisActions.clearErrorAnalysis());
           dispatch(analysisActions.clearInfoAnalysis());
+          setKeepSnackbarOpen(false);
         }}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'center',
         }}
       >
-        <Alert variant="filled" severity={error ? 'error' : 'info'} sx={{ width: '100%' }} onClose={() => error ? dispatch(analysisActions.clearErrorAnalysis()) : dispatch(analysisActions.clearInfoAnalysis())}>
+        <Alert variant="filled" severity={error ? 'error' : 'info'} sx={{ width: '100%' }} onClose={() => {
+          clearInterval(takingTooLongTimer);
+          dispatch(analysisActions.clearErrorAnalysis());
+          dispatch(analysisActions.clearInfoAnalysis());
+          setKeepSnackbarOpen(false);
+        }}
+        >
           {error || info}
         </Alert>
       </Snackbar>
