@@ -14,5 +14,5 @@ const Template = args => <Privacy {...args}/>;
 export const PrivacyView = Template.bind({});
 
 PrivacyView.args = {
-  title: 'Privacy | Thomas A. Mendez',
+  title: 'Privacy | Sum My Text',
 };
