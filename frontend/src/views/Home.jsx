@@ -17,34 +17,28 @@ function Home(props) {
   const data = useSelector((state) => state.analysis.data);
   const error = useSelector((state) => state.analysis.error);
   const info = useSelector((state) => state.analysis.info);
-
-  const [keepSnackbarOpen, setKeepSnackbarOpen] = useState(true);
-
-  let takingTooLongTimer; 
-
-  useEffect(() => {
-    if (isLoading && keepSnackbarOpen) {
-      takingTooLongTimer = setInterval(() => {
-        dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
-      }, 7000);
-    }
-  }, [isLoading, keepSnackbarOpen]);
+  const [takingTooLongTImer, setTakingTooLongTImer] = useState();
 
   useEffect(() => {
     if (isLoading) {
+      const timer = setInterval(() => {
+        dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'));
+      }, 7000);
+      setTakingTooLongTImer(timer);
+
       performAnalysis(text).then(res => {
-        clearInterval(takingTooLongTimer);
+        clearInterval(timer);
         dispatch(analysisActions.clearInfoAnalysis());
         dispatch(analysisActions.completedAnalysis(res.data));
       }).catch(err => {
-        clearInterval(takingTooLongTimer);
+        clearInterval(timer);
         dispatch(analysisActions.clearInfoAnalysis());
         if (err.response) {
           // Request made and server responded
           console.error(err.response.data);
           console.error(err.response.status);
           console.error(err.response.headers);
-          dispatch(analysisActions.errorAnalysis(`${err.response.status} Error`));
+          dispatch(analysisActions.errorAnalysis(`${err.response.status} Error: ${err.response.data.message}`));
         } else if (err.request) {
           // The request was made but no response was received
           console.error(err.request);
@@ -71,12 +65,11 @@ function Home(props) {
     >
       <Snackbar
         open={(error || info) ? true : false}
-        autoHideDuration={info ? null : 6000}
+        autoHideDuration={info ? null : 10000}
         onClose={() => {
-          clearInterval(takingTooLongTimer);
+          clearInterval(takingTooLongTImer);
           dispatch(analysisActions.clearErrorAnalysis());
           dispatch(analysisActions.clearInfoAnalysis());
-          setKeepSnackbarOpen(false);
         }}
         anchorOrigin={{
           vertical: 'top',
@@ -84,10 +77,9 @@ function Home(props) {
         }}
       >
         <Alert variant="filled" severity={error ? 'error' : 'info'} sx={{ width: '100%' }} onClose={() => {
-          clearInterval(takingTooLongTimer);
+          clearInterval(takingTooLongTImer);
           dispatch(analysisActions.clearErrorAnalysis());
           dispatch(analysisActions.clearInfoAnalysis());
-          setKeepSnackbarOpen(false);
         }}
         >
           {error || info}

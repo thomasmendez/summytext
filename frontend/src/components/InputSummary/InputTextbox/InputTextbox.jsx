@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector} from 'react-redux';
 import { analysisActions } from '../../../store/analysis';
-import 'regenerator-runtime/runtime';
-import { useSpeechRecognition } from 'react-speech-recognition';
+// import 'regenerator-runtime/runtime';
+// import { useSpeechRecognition } from 'react-speech-recognition';
 import PropTypes from 'prop-types';
 import { Card, CardContent, CardActions, TextField } from '@mui/material';
 // import SpeechToTextButton from './SpeechToTextButton';
@@ -14,10 +14,10 @@ const InputTextbox = (props) => {
   const dispatch = useDispatch();
   const text = useSelector((state) => state.analysis.text);
   const previousText = useSelector((state) => state.analysis.previousText);
-  const { browserSupportsSpeechRecognition } = useSpeechRecognition();
-  if (!browserSupportsSpeechRecognition) {
-    console.warn('Browser does not support speech recognition');
-  }
+  // const { browserSupportsSpeechRecognition } = useSpeechRecognition();
+  // if (!browserSupportsSpeechRecognition) {
+  //   console.warn('Browser does not support speech recognition');
+  // }
   return(
     <Card sx={{ width: 1 }} style={{ backgroundColor: backgroundColor }}>
       <CardContent>
