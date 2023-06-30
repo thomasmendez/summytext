@@ -24,25 +24,21 @@ function PrivacyView(props) {
         <TitleHeader titleName='Privacy' variant={'h5'} backgroundColor={'#b5ecf5'} />
       </Grid>
       <Grid item xs={12}>
-        <Typography textAlign="center" variant={'h6'} pb={5} pt={5} sx={{ color: 'black', backgroundColor: '#b5ecf5', fontWeight: 'normal'}}>
-          Sum My Text does not store any personal data that is inputed for summarizing.
-          <br /> 
-          {' '}
-          No data that is typed or imported from a PDF is stored.
-          <br /> 
-          {' '}
-          <br />
-          What data does the tool store?
-          <br />
-          The page uses Google analytics to track page visits. 
-          {' '}
-          <br />
-          IP Addresses are templorarily stored for preventing abuse of the tool.
-          {' '}
-          <br />
-          AWS CloudWatch logs are used for metrics and detecting server errors. 
-          {' '}
-        </Typography>
+        <Grid container item xs={12} sx={{ color: 'black', backgroundColor: '#b5ecf5', fontWeight: 'normal'}}>
+          <Grid item xs={12} pt={5} pb={5} spacing={1}>
+            <Typography textAlign="center" variant={'h6'}>
+              Sum My Text does not store any personal data that is inputed for summarizing.
+            </Typography>
+            <Typography textAlign="center" variant={'h6'}>
+              No data that is typed or imported from a PDF is stored.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} pb={5} spacing={1}>
+            <Typography textAlign="center" variant={'h6'}>
+              Tracking services are used only to measure usage and to detect page and server errors. 
+            </Typography>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );
