@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Link, Typography } from '@mui/material';
+import { BREAKPOINTSM } from '../utils/breakpoints';
+import useWindowDimensions from '../utils/windowDimensions';
+import { Grid, Link, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Box } from '@mui/material';
 import TitleHeader from '../components/TitleHeader';
 
 function About(props) {
+  const { width } = useWindowDimensions();
   useEffect(() => document.title = props.title, [props.title]);
   
   return (
@@ -24,55 +27,73 @@ function About(props) {
         <TitleHeader titleName='About' variant={'h5'} backgroundColor={'#b5ecf5'} />
       </Grid>
       <Grid item xs={12}>
-        <Typography textAlign="center" variant={'h6'} pb={5} pt={5} sx={{ color: 'black', backgroundColor: '#b5ecf5', fontWeight: 'normal'}}>
-          Sum My Text is a free online tool that allows users to summarize their text, extract topics presented in the text, and provide its overall sentiment.
-          <br /> 
-          {' '}
-          There is currently a character limit of 5000 characters or approximately one page of text to prevent responses from potentially being super slow. 
-          <br /> 
-          {' '}
-          The text can be typed, copy pasted, or imported from a pdf file.
-          <br />
-          {' '}
-          <br />
-
-          {' '}
-          Summarizing text for the first time when you visit may take a couple of seconds because the AI models are being loaded.
-          <br /> 
-          {' '}
-          Please do not abuse the usage of the tool. There is a set limit of times a user can summarize over a given period of time.
-          <br />
-          {' '}
-          If you made too many summaries in a given set of time, you will get an error. Please try to use the tool at a later point in time.
-          <br /> 
-          {' '}
-          <br />
-
-          The tool is built using the 
-          {' '}
-          <Link href="https://pypi.org/project/bert-extractive-summarizer">
-            ChatGPT 2 Transformer Model
-          </Link>
-          {' '}
-          and 
-          {' '}
-          <Link href="https://github.com/flairNLP/flair">
-            Flair NLP Sentiment and Classification models
-          </Link>
-          .
-          <br /> 
-          {' '}
-          <br />
-
-          The only supported language text is English as of right now.
-          <br /> 
-          {' '}
-          <br />
-
-          The tool does not store any text data that is provided for summarizing.
-          <br />
-          Please look at the privacy section to learn more. 
-        </Typography>
+        <Grid container item xs={12} sx={{ color: 'black', backgroundColor: '#b5ecf5', fontWeight: 'normal'}}>
+          <Grid item xs={12} pt={5} pb={5} spacing={1}>
+            <Typography textAlign="center" variant={'h6'}>
+              Need to summarize a text message, report, review, or an email? No problem!
+            </Typography>
+            <Typography textAlign="center" variant={'h6'}>
+              Sum My Text is a free online tool that allows users to summarize, identify topics, and describe emotional sentiment of their text.
+            </Typography>
+          </Grid>
+          {width > BREAKPOINTSM && <Grid item xs={4} />}
+          <Grid item xs={width > BREAKPOINTSM ? 4 : 12} pb={5}>
+            <Table sx={{ border: '1px solid black' }}>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    📕 Summarizes
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    Reports, essays & documents
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    🚀Capabilities
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    <p>
+                      Summarize Up To 5000 Characters (approx. 1 page 12-pt font)
+                    </p>
+                    <p>
+                      Identify Topics (Classification)
+                    </p>
+                    <p>
+                      Emotional Tone (Positive or Negative)
+                    </p>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    💡 AI Models
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    <p>
+                      ChatGPT 2 Transformer Model
+                    </p>
+                    <p>
+                      Flair NLP Classification Model
+                    </p>
+                    <p>
+                      Flair NLP Sentiment Model
+                    </p>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    💰 Free to Use
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: '1px solid black' }}>
+                    <Typography>
+                      Summarize at no cost
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );
