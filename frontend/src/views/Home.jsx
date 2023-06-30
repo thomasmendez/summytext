@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import useWindowDimensions from '../utils/windowDimensions';
+import { BREAKPOINTSM } from '../utils/breakpoints';
 import { analysisActions } from '../store/analysis';
 import { performAnalysis } from '../services/sumMyTextService';
 import { Grid, Snackbar, Alert } from '@mui/material';
@@ -9,6 +11,7 @@ import InputSummary from '../components/InputSummary';
 import Analysis from '../components/Analysis';
 
 function Home(props) {
+  const { width } = useWindowDimensions();
   useEffect(() => document.title = props.title, [props.title]);
 
   const dispatch = useDispatch();
@@ -91,10 +94,10 @@ function Home(props) {
       <Grid container item xs={12}>
         {data ? (
           <>
-            <Grid item xs={6}>
+            <Grid item xs={width > BREAKPOINTSM ? 6 : 12}>
               <InputSummary />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={width > BREAKPOINTSM ? 6 : 12}>
               <Analysis
                 sentiment={data.sentiment}
                 grammaticalCorrectness={data.grammaticalCorrectness}
