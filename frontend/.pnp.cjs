@@ -148,7 +148,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["json5", "npm:2.2.1"],
             ["lodash", "npm:4.17.21"],
             ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],
-            ["semver", "npm:5.7.1"],
+            ["semver", "npm:5.7.2"],
             ["source-map", "npm:0.5.7"]
           ],
           "linkType": "HARD",
@@ -12399,7 +12399,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cross-spawn", "npm:6.0.5"],
             ["nice-try", "npm:1.0.5"],
             ["path-key", "npm:2.0.1"],
-            ["semver", "npm:5.7.1"],
+            ["semver", "npm:5.7.2"],
             ["shebang-command", "npm:1.2.0"],
             ["which", "npm:1.3.1"]
           ],
@@ -13758,7 +13758,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["is-regex", "npm:1.1.4"],
             ["lodash", "npm:4.17.21"],
             ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],
-            ["semver", "npm:5.7.1"],
+            ["semver", "npm:5.7.2"],
             ["webpack", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:5.87.0"]
           ],
           "packagePeers": [
@@ -14778,7 +14778,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", null],
             ["micromatch", "npm:3.1.10"],
             ["minimatch", "npm:3.1.2"],
-            ["semver", "npm:5.7.1"],
+            ["semver", "npm:5.7.2"],
             ["tapable", "npm:1.1.3"],
             ["typescript", null],
             ["vue-template-compiler", null],
@@ -18234,7 +18234,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["make-dir", "npm:2.1.0"],
             ["pify", "npm:4.0.1"],
-            ["semver", "npm:5.7.1"]
+            ["semver", "npm:5.7.2"]
           ],
           "linkType": "HARD",
         }],
@@ -19110,7 +19110,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["normalize-package-data", "npm:2.5.0"],
             ["hosted-git-info", "npm:2.8.9"],
             ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],
-            ["semver", "npm:5.7.1"],
+            ["semver", "npm:5.7.2"],
             ["validate-npm-package-license", "npm:3.0.4"]
           ],
           "linkType": "HARD",
@@ -21958,10 +21958,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["semver", [
-        ["npm:5.7.1", {
-          "packageLocation": "./.yarn/cache/semver-npm-5.7.1-40bcea106b-57fd0acfd0.zip/node_modules/semver/",
+        ["npm:5.7.2", {
+          "packageLocation": "./.yarn/cache/semver-npm-5.7.2-938ee91eaa-fb4ab5e0dd.zip/node_modules/semver/",
           "packageDependencies": [
-            ["semver", "npm:5.7.1"]
+            ["semver", "npm:5.7.2"]
           ],
           "linkType": "HARD",
         }],
