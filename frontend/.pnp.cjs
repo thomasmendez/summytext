@@ -74,7 +74,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["html-webpack-plugin", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:5.5.0"],
             ["jest", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:27.5.1"],
             ["lint-staged", "npm:11.2.6"],
-            ["pdfjs-dist", "npm:3.7.107"],
+            ["pdfjs-dist", "npm:4.3.136"],
             ["prettier", "npm:2.8.0"],
             ["prop-types", "npm:15.8.1"],
             ["react", "npm:17.0.2"],
@@ -19884,11 +19884,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["path2d-polyfill", [
-        ["npm:2.0.1", {
-          "packageLocation": "./.yarn/cache/path2d-polyfill-npm-2.0.1-cca87dc638-e38a4f920b.zip/node_modules/path2d-polyfill/",
+      ["path2d", [
+        ["npm:0.2.0", {
+          "packageLocation": "./.yarn/cache/path2d-npm-0.2.0-030f2ebad6-caa6cf1943.zip/node_modules/path2d/",
           "packageDependencies": [
-            ["path2d-polyfill", "npm:2.0.1"]
+            ["path2d", "npm:0.2.0"]
           ],
           "linkType": "HARD",
         }]
@@ -19908,12 +19908,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["pdfjs-dist", [
-        ["npm:3.7.107", {
-          "packageLocation": "./.yarn/cache/pdfjs-dist-npm-3.7.107-f775ee0513-04959f844a.zip/node_modules/pdfjs-dist/",
+        ["npm:4.3.136", {
+          "packageLocation": "./.yarn/cache/pdfjs-dist-npm-4.3.136-35a0e70ced-3f2a528cc0.zip/node_modules/pdfjs-dist/",
           "packageDependencies": [
-            ["pdfjs-dist", "npm:3.7.107"],
+            ["pdfjs-dist", "npm:4.3.136"],
             ["canvas", "npm:2.11.2"],
-            ["path2d-polyfill", "npm:2.0.1"]
+            ["path2d", "npm:0.2.0"]
           ],
           "linkType": "HARD",
         }]
@@ -21054,7 +21054,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["html-webpack-plugin", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:5.5.0"],
             ["jest", "virtual:7b267a74aa77fbffac560d43d2e54202d41290498f2f35562f90f8efcc35d819136b00ffaac6261ce4447b6f176870533ff810e540e9e1d4c2316e0f660765f2#npm:27.5.1"],
             ["lint-staged", "npm:11.2.6"],
-            ["pdfjs-dist", "npm:3.7.107"],
+            ["pdfjs-dist", "npm:4.3.136"],
             ["prettier", "npm:2.8.0"],
             ["prop-types", "npm:15.8.1"],
             ["react", "npm:17.0.2"],

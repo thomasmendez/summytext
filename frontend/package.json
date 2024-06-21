@@ -34,7 +34,7 @@
     "axios": "^1.2.0",
     "axios-retry": "^3.5.0",
     "file-loader": "^6.2.0",
-    "pdfjs-dist": "^3.7.107",
+    "pdfjs-dist": "^4.2.67",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-ga4": "^2.1.0",
