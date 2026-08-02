@@ -20,6 +20,8 @@ This project uses the `Makefile` in order to easily run sets of commands. The co
 
 ### Install Dependencies
 
+**Linux/Mac:** You will need to create a virtual environment in the current directory `python3 -m venv .venv` and `source .venv/bin/activate`
+
 Run `pip install -r requirements.txt` in order to install the required python libraries to run the project
 
 ### Run Locally
