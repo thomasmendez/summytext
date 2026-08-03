@@ -20,6 +20,38 @@ your machine is the whole pipeline.
 - Your admin role/profile configured locally and active, e.g. via
   `aws configure` / `AWS_PROFILE` / `aws sso login`
 
+### "Error: Running AWS SAM projects locally requires a container runtime"
+
+SAM connects to Docker directly (via `DOCKER_HOST`/the default socket), not
+through the `docker` CLI's config, so `docker` commands working doesn't
+guarantee SAM can connect. The fix depends on which Docker you have:
+
+**Docker Desktop (macOS, or Linux with Docker Desktop installed):** Desktop
+doesn't expose the standard `/var/run/docker.sock` by default, which is what
+SAM looks for. Either:
+- Docker Desktop → Settings → Advanced → enable **"Allow the default Docker
+  socket to be used"**, restart Desktop, retry — or
+- point SAM at Desktop's actual socket:
+  ```sh
+  docker context inspect desktop-linux -f '{{.Endpoints.docker.Host}}'
+  # typically: unix:///home/<you>/.docker/desktop/docker.sock
+  export DOCKER_HOST=unix:///home/<you>/.docker/desktop/docker.sock
+  ```
+  Add the `export` to your shell profile if you want it to persist.
+
+**Docker Engine (`dockerd`, e.g. installed via apt on Ubuntu/Mint):** the
+default socket is already at the standard path, so `DOCKER_HOST` usually
+doesn't need to be set at all — Desktop-specific fixes above don't apply here.
+The far more likely cause is that your user isn't in the `docker` group yet
+(the socket is `root:docker`-owned, mode `0660`):
+```sh
+groups $USER   # look for "docker" in the list
+sudo usermod -aG docker $USER
+```
+Then **fully log out and back in** (a new terminal alone isn't enough — group
+membership is read at login) and confirm with `docker run --rm hello-world`
+before retrying `sam build`.
+
 ## One-time bootstrap: adopting the existing ECR repositories
 
 `summytext-backend-dev`, `summytext-backend-stg`, and `summytext-backend-prd`
