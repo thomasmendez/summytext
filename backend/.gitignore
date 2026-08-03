@@ -131,4 +131,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-transformers/cache/
+models_cache/
