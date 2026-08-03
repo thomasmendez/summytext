@@ -7,7 +7,7 @@ from summarizer import TransformerSummarizer
 from flair.nn import Classifier
 from flair.data import Sentence
 
-from app import main
+from app.models import get_sentiment_classifier, get_summarizer, get_topic_classifier
 
 router = APIRouter()
 
@@ -19,7 +19,7 @@ async def predict_summary(text: str, summarizer_transformer: TransformerSummariz
     return summary
 
 async def predict_sentiment(text: str, sentiment_classifier: Classifier):
-    
+
     sentence = Sentence(text)
 
     sentiment_classifier.predict(sentence)
@@ -60,7 +60,7 @@ async def process_predictions(
 
     task = asyncio.create_task(predict_topics(text, topic_labels_classifier))
     tasks.append(task)
-    
+
     # Await the completion of all tasks
     results = await asyncio.gather(*tasks)
 
@@ -69,9 +69,9 @@ async def process_predictions(
 @router.post("/")
 async def analyze(
         input_text: InputText,
-        summarizer_transformer: TransformerSummarizer = Depends(lambda: main.summarizer_transformer),
-        sentiment_classifier: Classifier = Depends(lambda: main.sentiment_classifier),
-        topic_labels_classifier: Classifier = Depends(lambda: main.topic_labels_classifier),
+        summarizer_transformer: TransformerSummarizer = Depends(get_summarizer),
+        sentiment_classifier: Classifier = Depends(get_sentiment_classifier),
+        topic_labels_classifier: Classifier = Depends(get_topic_classifier),
     ):
 
     # Measure execution time without concurrency
@@ -85,7 +85,7 @@ async def analyze(
 
     # Measure execution time with concurrency
     start_time = time.time()
-    
+
     results = await process_predictions(
         input_text.text,
         summarizer_transformer,

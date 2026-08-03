@@ -6,19 +6,6 @@ import os
 load_dotenv()
 env = os.getenv('ENV')
 proxy = os.getenv('PROXY')
-import flair
-from pathlib import Path
-
-if env != None and env != 'local':
-    os.environ['TRANSFORMERS_CACHE'] = '/tmp/transformers/cache/'
-    flair.cache_root = Path('/tmp/.flair')
-
-from summarizer import TransformerSummarizer
-from flair.nn import Classifier
-
-summarizer_transformer = TransformerSummarizer(transformer_type='GPT2',transformer_model_key='gpt2-medium')
-sentiment_classifier = Classifier.load('sentiment')
-topic_labels_classifier = Classifier.load('ner-ontonotes-large')
 
 from app.api.api_v1.api import router as api_router
 from mangum import Mangum

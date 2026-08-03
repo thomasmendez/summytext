@@ -1,9 +1,11 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 fastapi
 uvicorn[standard]
 mangum
 python-dotenv
-transformers
-spacy
-bert-extractive-summarizer
-flair
+torch==2.6.0+cpu
+transformers==4.57.6
+bert-extractive-summarizer==0.10.1
+flair==0.15.1
 cachetools

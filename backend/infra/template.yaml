@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  summytext backend - container-image Lambda (flair/transformers predict endpoint)
+  fronted by an HTTP API. Built and deployed with `sam build` / `sam deploy --guided`,
+  which builds the Dockerfile in ../ and pushes the resulting image to ECR as part
+  of the deploy. One stack per environment (dev/stg/prd).
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [dev, stg, prd]
+    Description: Deployment environment. Drives resource names and the API stage path.
+
+  MemorySize:
+    Type: Number
+    Default: 4096
+    MinValue: 128
+    MaxValue: 10240
+    Description: >
+      Lambda memory in MB. The baked-in models are ~4GB of weights resident in
+      memory; keep enough headroom above that for request handling.
+
+  Timeout:
+    Type: Number
+    Default: 60
+    MinValue: 1
+    MaxValue: 900
+    Description: >
+      Lambda function timeout in seconds. Models are lazy-loaded on first
+      request after a cold start, so this needs to comfortably cover that
+      first, slower request.
+
+  LogRetentionInDays:
+    Type: Number
+    Default: 14
+
+Resources:
+  EcrRepository:
+    Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      RepositoryName: !Sub summytext-backend-${Environment}
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Expire untagged images after 14 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 14
+                },
+                "action": { "type": "expire" }
+              }
+            ]
+          }
+
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/summytext-backend-${Environment}
+      RetentionInDays: !Ref LogRetentionInDays
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub summytext-backend-${Environment}-lambda-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Environment
+
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: LambdaLogGroup
+    Metadata:
+      # Tells `sam build` how to build the image: Dockerfile and app code live
+      # one level up from this template, in backend/.
+      Dockerfile: Dockerfile
+      DockerContext: ../
+      DockerTag: latest
+    Properties:
+      FunctionName: !Sub summytext-backend-${Environment}
+      PackageType: Image
+      Role: !GetAtt LambdaExecutionRole.Arn
+      MemorySize: !Ref MemorySize
+      Timeout: !Ref Timeout
+      Events:
+        ProxyApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiEndpoint:
+    Description: Invoke URL for this environment (matches the existing ENV/root_path proxy pattern in app/main.py)
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+
+  LambdaFunctionArn:
+    Value: !GetAtt LambdaFunction.Arn
+
+  EcrRepositoryUri:
+    Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepository}
