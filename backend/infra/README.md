@@ -114,8 +114,14 @@ You'll be prompted for, among other things:
   unless an environment needs different sizing
 - **Confirm changes before deploy**: `Y` recommended, at least for the first
   few deploys per environment
-- **Allow SAM CLI IAM role creation**: `Y` (the template names the Lambda
-  execution role explicitly, which requires `CAPABILITY_NAMED_IAM`)
+- **Allow SAM CLI IAM role creation**: `Y` — note this prompt only ever saves
+  `CAPABILITY_IAM` to `samconfig.toml`, but this template names the Lambda
+  execution role explicitly (`RoleName` on `LambdaExecutionRole`), which
+  requires the stronger `CAPABILITY_NAMED_IAM`. The guided deploy's first
+  changeset will fail with `Requires capabilities : [CAPABILITY_NAMED_IAM]`.
+  Fix it by hand afterwards: open the generated `samconfig.toml` and change
+  `capabilities = "CAPABILITY_IAM"` to `capabilities = "CAPABILITY_NAMED_IAM"`,
+  then re-run `sam deploy`.
 - **Image Repository for LambdaFunction**: the existing
   `summytext-backend-<env>` ECR repo URI from the bootstrap step above (or let
   SAM create/manage one if this is a brand-new environment)
@@ -142,6 +148,112 @@ sam validate --template-file template.yaml
 # or, for a more thorough lint:
 pip install cfn-lint && cfn-lint template.yaml
 ```
+
+## Troubleshooting: cold start / `Sandbox.Timedout` on first request
+
+The first deploy to a fresh environment can fail its first invocation(s) with
+`503 {"message":"Service Unavailable"}` from the API, or a direct
+`aws lambda invoke` returning `errorType":"Sandbox.Timedout"`. Root cause and
+what's already tuned for it:
+
+- **Lambda's init phase has a fixed, non-configurable 10-second cap** —
+  unrelated to the `Timeout` parameter, which only covers the *invoke* phase.
+  You'll see `INIT_REPORT ... Phase: init ... Status: timeout` in CloudWatch
+  even on a healthy deploy; this is expected. `app/models.py` lazy-loads all
+  three models on first request specifically so the heavy work happens during
+  *invoke* (governed by `Timeout`), not *init* — don't move model loading to
+  module scope, it would hit the 10s cap on every cold start.
+- **The real cost is `Classifier.load('ner-ontonotes-large')`** — of the three
+  models, it's by far the slowest to load on a genuinely cold Lambda
+  environment (tens of seconds, observed up to ~65s even with the fixes
+  below), vs. low single digits for the sentiment classifier and summarizer.
+  It loads near-instantly (<1s difference from the others) when run locally
+  via `docker run` with the same image — the gap is Lambda-specific.
+- **Why it's Lambda-specific**: container-image Lambdas load image layers
+  **on-demand** the first time an execution environment touches them, rather
+  than having the full image already resident on disk like a local `docker
+  run`. A genuinely cold environment pays a network-fetch cost proportional to
+  how much of the (baked-in, multi-GB) model data that request actually
+  touches. This is slow, not hung — given enough `Timeout`, it does complete.
+- **What's tuned to work around it**:
+  - `MemorySize` defaults to `10240` (the max) — Lambda allocates CPU
+    proportional to memory, which speeds up both the torch/transformers/flair
+    imports and model deserialization.
+  - `Timeout` defaults to `900` (the max) so a slow cold invoke_ never gets
+    killed mid-load.
+  - `Dockerfile` sets `JOBLIB_MULTIPROCESSING=0` and
+    `TOKENIZERS_PARALLELISM=false` — Lambda's `/dev/shm` is heavily
+    restricted, which breaks joblib's default multiprocessing backend (you'll
+    see a `joblib will operate in serial mode` warning in the logs even with
+    this set — that one call site already falls back gracefully; these vars
+    just make sure nothing else in the dependency chain tries to use
+    multiprocessing at all). Note: this did **not** turn out to be the cause
+    of the timeouts (the real cause is the on-demand image loading above) —
+    it's left in as cheap insurance against a real known Lambda/joblib
+    footgun. We also tried `OMP_NUM_THREADS=1` to rule out CPU
+    oversubscription; it made cold loads slower (forces single-threaded
+    torch math) with no effect on the hang, so it was reverted.
+  - `app/models.py` has temporary `[timing]` print statements around each
+    import and each model load — cheap, and useful if cold-start behavior
+    needs re-diagnosing later (e.g. after a dependency bump). Safe to remove
+    once things feel settled.
+
+- **This is still not solved for real user traffic.** `HttpApi` (API Gateway
+  v2) has a **hard 30-second integration timeout that cannot be raised**, no
+  matter what `Timeout` is set to. A real cold request through the API will
+  still fail even though the same request via direct `aws lambda invoke`
+  (which isn't subject to that cap) now succeeds. The two realistic fixes,
+  neither applied yet:
+  - **Provisioned Concurrency** — keeps N pre-initialized environments always
+    warm so real requests never hit a true cold start. Ongoing cost for the
+    idle capacity.
+  - **Move baked model weights to EFS** instead of the container image — AWS's
+    documented pattern for large-model Lambdas, avoids on-demand image-layer
+    loading entirely. No idle-capacity cost, but a bigger re-architecture.
+
+- **Diagnosing directly against Lambda, bypassing the API's 30s cap**:
+  ```sh
+  aws lambda invoke --function-name <function-name> \
+    --payload file://payload.json \
+    --cli-read-timeout 0 \
+    --cli-binary-format raw-in-base64-out response.json
+  cat response.json
+  aws logs tail /aws/lambda/<function-name> --since 10m
+  ```
+  `payload.json` needs to be a full API Gateway **v2** (HTTP API) proxy event
+  — `Mangum` infers the handler type from the event shape and a v1/REST-API
+  shaped payload fails with `RuntimeError: The adapter was unable to infer a
+  handler`:
+  ```json
+  {
+    "version": "2.0",
+    "routeKey": "$default",
+    "rawPath": "/api/v1/predict/",
+    "rawQueryString": "",
+    "headers": { "content-type": "application/json" },
+    "requestContext": {
+      "http": { "method": "POST", "path": "/api/v1/predict/", "protocol": "HTTP/1.1", "sourceIp": "127.0.0.1", "userAgent": "curl/8.0" },
+      "requestId": "test-request-id",
+      "routeKey": "$default",
+      "stage": "test"
+    },
+    "body": "{\"text\":\"Apple announced record iPhone sales this quarter.\"}",
+    "isBase64Encoded": false
+  }
+  ```
+
+## Known gap: stage-prefix routing (`ENV`/`PROXY` not set)
+
+`app/main.py` only strips the API Gateway stage prefix (e.g. `/test`) from
+incoming request paths when both `ENV` and `PROXY` environment variables are
+set (`env != 'local'` and `proxy == 'true'`) — this was previously baked in by
+the old GitHub Actions pipeline writing `app/.env` at Docker build time. The
+new SAM-based `Dockerfile`/`template.yaml` set neither, so `LambdaFunction`
+currently has no `Environment: Variables:` block. Requests through the real
+`ApiEndpoint` (which includes the stage prefix) may 404 as a result — not yet
+confirmed against a working deploy end-to-end. If so, the fix is adding
+`Environment: Variables: { ENV: !Ref Environment, PROXY: 'true' }` to
+`LambdaFunction` in `template.yaml`.
 
 ## Verify the fix (no more downloads at cold start)
 

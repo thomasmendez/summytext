@@ -22,6 +22,15 @@ RUN mkdir -p "${HF_HOME}" "${FLAIR_CACHE_ROOT}" && \
 ENV HF_HUB_OFFLINE=1
 ENV TRANSFORMERS_OFFLINE=1
 
+# Lambda's /dev/shm is heavily restricted, which breaks joblib/multiprocessing's
+# default backend (loky) -- it can hang indefinitely waiting on a semaphore that
+# will never be satisfied, rather than failing cleanly. Force every
+# multiprocessing-capable library in this stack (joblib directly, plus anything
+# that shells out to it via scikit-learn/gensim/huggingface tokenizers) into
+# single-process mode so nothing tries to use /dev/shm at all.
+ENV JOBLIB_MULTIPROCESSING=0
+ENV TOKENIZERS_PARALLELISM=false
+
 COPY . ${LAMBDA_TASK_ROOT}
 
 CMD [ "app.main.handler" ]

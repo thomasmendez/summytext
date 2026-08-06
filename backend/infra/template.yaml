@@ -9,21 +9,29 @@ Description: >
 Parameters:
   Environment:
     Type: String
-    AllowedValues: [dev, stg, prd]
-    Description: Deployment environment. Drives resource names and the API stage path.
+    AllowedValues: [dev, stg, prd, test]
+    Description: >
+      Deployment environment. Drives resource names and the API stage path.
+      `test` is for throwaway/scratch stacks only (e.g. verifying a deploy
+      end-to-end without touching real dev/stg/prd resources) — delete the
+      stack when done with it.
 
   MemorySize:
     Type: Number
-    Default: 4096
+    Default: 10240
     MinValue: 128
     MaxValue: 10240
     Description: >
       Lambda memory in MB. The baked-in models are ~4GB of weights resident in
-      memory; keep enough headroom above that for request handling.
+      memory; keep enough headroom above that for request handling. Lambda
+      also scales CPU allocation with memory, which speeds up the heavy
+      torch/transformers/flair imports and model deserialization on cold
+      start — set to the max while cold-start duration is still being
+      diagnosed.
 
   Timeout:
     Type: Number
-    Default: 60
+    Default: 900
     MinValue: 1
     MaxValue: 900
     Description: >
