@@ -43,6 +43,17 @@ Parameters:
     Type: Number
     Default: 14
 
+  CorsAllowOrigin:
+    Type: String
+    Default: http://localhost:8080
+    Description: >
+      Origin allowed to call this API (sent as Access-Control-Allow-Origin by
+      the FastAPI CORS middleware, via the CORS_ALLOW_ORIGIN env var read in
+      app/main.py). Defaults to the frontend's local dev server address so a
+      dev/test stack works out of the box for hitting the API from a
+      localhost frontend. Override with the deployed frontend's origin
+      (e.g. https://summytext.com) for stg/prd stacks.
+
 Resources:
   EcrRepository:
     Type: AWS::ECR::Repository
@@ -90,8 +101,8 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-  HttpApi:
-    Type: AWS::Serverless::HttpApi
+  RestApi:
+    Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
 
@@ -110,18 +121,21 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       MemorySize: !Ref MemorySize
       Timeout: !Ref Timeout
+      Environment:
+        Variables:
+          CORS_ALLOW_ORIGIN: !Ref CorsAllowOrigin
       Events:
         ProxyApi:
-          Type: HttpApi
+          Type: Api
           Properties:
-            ApiId: !Ref HttpApi
+            RestApiId: !Ref RestApi
             Path: /{proxy+}
             Method: ANY
 
 Outputs:
   ApiEndpoint:
     Description: Invoke URL for this environment (matches the existing ENV/root_path proxy pattern in app/main.py)
-    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+    Value: !Sub https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
 
   LambdaFunctionArn:
     Value: !GetAtt LambdaFunction.Arn

@@ -29,6 +29,10 @@ if env == 'stg':
 if env == 'prd':
     origins.append('https://summytext.com')
 
+cors_allow_origin = os.getenv('CORS_ALLOW_ORIGIN')
+if cors_allow_origin:
+    origins.append(cors_allow_origin)
+
 from fastapi.responses import JSONResponse
 from cachetools import LRUCache
 import asyncio

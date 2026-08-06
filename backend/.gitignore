@@ -133,6 +133,8 @@ dmypy.json
 
 model_cache/
 
+
+.aws-sam
 samconfig.toml
 payload.json
 response.json
