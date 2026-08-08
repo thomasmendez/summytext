@@ -17,7 +17,7 @@ origins = []
 if (env != None and env != 'local') and (proxy != None and proxy == 'true'):
     app.root_path = f'/{env}'
 
-if env == 'local':
+if env == 'local' or env == 'test':
     origins.append('http://localhost:8080')
 
 if env == 'dev':
@@ -28,10 +28,6 @@ if env == 'stg':
 
 if env == 'prd':
     origins.append('https://summytext.com')
-
-cors_allow_origin = os.getenv('CORS_ALLOW_ORIGIN')
-if cors_allow_origin:
-    origins.append(cors_allow_origin)
 
 from fastapi.responses import JSONResponse
 from cachetools import LRUCache
@@ -45,6 +41,12 @@ CACHE_EXPIRATION = 3600  # Expiration time for cache entries in seconds
 
 @app.middleware("http")
 async def cache_requests(request, call_next):
+    # CORS preflight requests shouldn't count against the caller's quota: the
+    # browser sends an OPTIONS before each cross-origin POST, which would
+    # otherwise double every client's request count and trip the rate limit.
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     ip_address = request.client.host
 
     # Get the current timestamp

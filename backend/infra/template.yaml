@@ -2,16 +2,18 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   summytext backend - container-image Lambda (flair/transformers predict endpoint)
-  fronted by an HTTP API. Built and deployed with `sam build` / `sam deploy --guided`,
-  which builds the Dockerfile in ../ and pushes the resulting image to ECR as part
-  of the deploy. One stack per environment (dev/stg/prd).
+  exposed directly via a Lambda Function URL. Built and deployed with `sam build`
+  / `sam deploy --guided`, which builds the Dockerfile in ../ and pushes the
+  resulting image to ECR as part of the deploy. One stack per environment
+  (dev/stg/prd).
 
 Parameters:
   Environment:
     Type: String
     AllowedValues: [dev, stg, prd, test]
     Description: >
-      Deployment environment. Drives resource names and the API stage path.
+      Deployment environment. Drives resource names and the ENV variable
+      passed to the app (which selects CORS origins).
       `test` is for throwaway/scratch stacks only (e.g. verifying a deploy
       end-to-end without touching real dev/stg/prd resources) — delete the
       stack when done with it.
@@ -42,17 +44,6 @@ Parameters:
   LogRetentionInDays:
     Type: Number
     Default: 14
-
-  CorsAllowOrigin:
-    Type: String
-    Default: http://localhost:8080
-    Description: >
-      Origin allowed to call this API (sent as Access-Control-Allow-Origin by
-      the FastAPI CORS middleware, via the CORS_ALLOW_ORIGIN env var read in
-      app/main.py). Defaults to the frontend's local dev server address so a
-      dev/test stack works out of the box for hitting the API from a
-      localhost frontend. Override with the deployed frontend's origin
-      (e.g. https://summytext.com) for stg/prd stacks.
 
 Resources:
   EcrRepository:
@@ -101,11 +92,6 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-  RestApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: !Ref Environment
-
   LambdaFunction:
     Type: AWS::Serverless::Function
     DependsOn: LambdaLogGroup
@@ -123,19 +109,28 @@ Resources:
       Timeout: !Ref Timeout
       Environment:
         Variables:
-          CORS_ALLOW_ORIGIN: !Ref CorsAllowOrigin
-      Events:
-        ProxyApi:
-          Type: Api
-          Properties:
-            RestApiId: !Ref RestApi
-            Path: /{proxy+}
-            Method: ANY
+          # Drives the CORS origins in app/main.py. PROXY is intentionally left
+          # unset: a Function URL has no stage path prefix (unlike the old HTTP
+          # API's /{env} stage), so FastAPI's root_path must stay empty.
+          ENV: !Ref Environment
+      # Expose the function directly via a Lambda Function URL instead of API
+      # Gateway. HTTP APIs have a hard 30s integration timeout that cannot be
+      # raised, so cold starts (~60s while models load) always 504'd and the
+      # frontend retried. Function URLs honor the full function Timeout (up to
+      # 15 min), so a cold request completes instead of failing. CORS is handled
+      # by FastAPI's CORSMiddleware (env-driven) -- configuring a Cors block here
+      # too would emit duplicate Access-Control-* headers and break the browser.
+      FunctionUrlConfig:
+        AuthType: NONE
 
 Outputs:
-  ApiEndpoint:
-    Description: Invoke URL for this environment (matches the existing ENV/root_path proxy pattern in app/main.py)
-    Value: !Sub https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  FunctionUrl:
+    Description: >
+      Public HTTPS endpoint for this environment (Lambda Function URL). It has a
+      trailing slash and no stage prefix -- call it directly, e.g.
+      <FunctionUrl>api/v1/predict/. Set the frontend's SUM_MY_TEXT_SERVICE to
+      this value WITHOUT the trailing slash.
+    Value: !GetAtt LambdaFunctionUrl.FunctionUrl
 
   LambdaFunctionArn:
     Value: !GetAtt LambdaFunction.Arn

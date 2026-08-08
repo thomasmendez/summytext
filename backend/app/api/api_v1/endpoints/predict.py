@@ -66,7 +66,14 @@ async def process_predictions(
 
     return results
 
-@router.post("/")
+# Route has NO trailing slash on purpose. A Lambda Function URL strips the
+# trailing slash from the request path before the app sees it, so a request to
+# /api/v1/predict/ arrives as /api/v1/predict. With the old "/" route, FastAPI
+# kept 307-redirecting to add the slash back -- which the Function URL stripped
+# again -- producing an infinite redirect loop. Matching the stripped path here
+# returns 200 directly. (Stacking @router.post("") and @router.post("/") does
+# NOT work on this FastAPI version -- it collapses to a route with no methods.)
+@router.post("")
 async def analyze(
         input_text: InputText,
         summarizer_transformer: TransformerSummarizer = Depends(get_summarizer),
