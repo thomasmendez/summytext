@@ -5,6 +5,55 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Backend deployment refactor (`refactor/deployment`). Reworked how the backend is
+packaged, deployed, and exposed, targeting a self-contained deploy and a faster,
+more reliable path for the infrequent but heavy cold-start workload.
+
+### Added
+
+- **AWS SAM template** (`backend/infra/template.yaml`) as the backend's
+  infrastructure-as-code: ECR repository, container-image Lambda, IAM role, log
+  group, and public endpoint, all provisioned with `sam build` / `sam deploy`
+  from your machine (no CI dependency). Documented in `backend/infra/README.md`.
+- **Lambda Function URL** as the public endpoint (`AuthType: NONE`) for direct
+  access to the function. Unlike API Gateway's hard 30s integration timeout, a
+  Function URL honors the full Lambda timeout, so a cold-start request (~60s
+  while models load) completes instead of returning a 504.
+- **Models baked into the container image at build time**
+  (`scripts/bake_models.py`, with `HF_HUB_OFFLINE` / `TRANSFORMERS_OFFLINE`
+  enforced at runtime) so no model files are downloaded on cold start.
+- Lazy, timing-instrumented model loading (`app/models.py`) so heavy imports
+  don't block Lambda init.
+- Backend test scaffolding (`backend/tests/`) and dev requirements.
+- Cold-start / cost analysis notes (`backend/infra/cold-start-optimization.md`).
+
+### Changed
+
+- **Fewer frontend API calls** (`frontend/src/services/sumMyTextService.js`):
+  request retries reduced from **10 to 2** with exponential backoff, plus an
+  explicit 120s timeout. Cold requests now complete on the first call over the
+  Function URL, so the client no longer retries into the 30s ceiling and no
+  longer risks spawning additional cold containers per retry.
+- Rate-limit middleware (`app/main.py`) no longer counts CORS preflight
+  (`OPTIONS`) requests against a caller's hourly quota.
+- Deployment mechanism is now the in-repo SAM template rather than the
+  Terraform-module git submodule (`workflows/`) driven by GitHub Actions.
+- Backend dependencies pinned and switched to CPU-only PyTorch wheels; dropped
+  the unused `spacy` dependency.
+
+### Fixed
+
+- **Infinite 307 redirect loop** on the predict endpoint. A Lambda Function URL
+  strips the trailing slash from the request path, so the old `/api/v1/predict/`
+  route kept redirecting to re-add the slash and looped forever. The route is
+  now registered without a trailing slash (`@router.post("")`).
+
+### Removed
+
+- API Gateway from the backend request path, replaced by the Lambda Function URL.
+
 ## [1.0.0] - 2024-06-21
 
 Original production release. Development began November 2022; this snapshot
