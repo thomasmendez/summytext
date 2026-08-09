@@ -90,13 +90,13 @@ const Home = () => {
         backgroundColor="#b5ecf5"
       />
 
-      <div className="mx-auto mt-6 max-w-6xl">
+      <div className="mt-6 w-full">
         {data ? (
           <div className="flex flex-col gap-6 sm:flex-row">
-            <div className="flex-1">
+            <div className="w-full sm:w-1/2">
               <InputSummary />
             </div>
-            <div className="flex-1">
+            <div className="w-full sm:w-1/2">
               <Analysis
                 sentiment={data.sentiment}
                 topics={data.topics}
@@ -105,7 +105,7 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <div className="mx-auto max-w-3xl">
+          <div className="w-full">
             <InputSummary />
           </div>
         )}
