@@ -9,6 +9,7 @@ const SubmitButton = () => {
       <button
         type="button"
         disabled
+        data-testid="submit-button"
         className="flex flex-1 items-center justify-center gap-2 rounded-md border border-gray-400 px-4 py-2 text-gray-600"
       >
         <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
@@ -21,6 +22,7 @@ const SubmitButton = () => {
     <button
       type="button"
       disabled={!text}
+      data-testid="submit-button"
       onClick={() => {
         if (text) performAnalysis(text)
       }}

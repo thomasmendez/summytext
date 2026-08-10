@@ -13,13 +13,14 @@ const Analysis = ({
   summary = 'My text summary',
 }: AnalysisProps) => {
   return (
-    <div className="w-full">
+    <div className="w-full" data-testid="analysis-view">
       <TitleHeader
         titleName="Analysis"
         variant="h5"
         pt={3}
         pb={3}
         backgroundColor="#b5ecf5"
+        testId="analysis-title"
       />
       <div className="rounded-md p-4 shadow" style={{ backgroundColor }}>
         <div className="flex flex-col gap-6">
@@ -27,12 +28,19 @@ const Analysis = ({
             title="Summarized Text"
             content={summary}
             backgroundColor="#b5ecf5"
+            testId="analysis-summary"
           />
-          <CardResult title="Topics" content={topics} backgroundColor="#b5ecf5" />
+          <CardResult
+            title="Topics"
+            content={topics}
+            backgroundColor="#b5ecf5"
+            testId="analysis-topics"
+          />
           <CardResult
             title="Sentiment"
             content={sentiment}
             backgroundColor="#b5ecf5"
+            testId="analysis-sentiment"
           />
         </div>
       </div>

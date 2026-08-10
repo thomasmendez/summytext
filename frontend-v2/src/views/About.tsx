@@ -7,28 +7,36 @@ const About = () => {
   }, [])
 
   return (
-    <div className="bg-[lavender] text-center">
+    <div className="bg-[lavender] text-center" data-testid="about-view">
       <TitleHeader
         titleName="Sum My Text"
         variant="h4"
         backgroundColor="#b5ecf5"
       />
-      <TitleHeader titleName="About" variant="h5" backgroundColor="#b5ecf5" />
+      <TitleHeader
+        titleName="About"
+        variant="h5"
+        backgroundColor="#b5ecf5"
+        testId="about-title"
+      />
 
       <div className="bg-[#b5ecf5] text-black">
         <div className="mx-auto max-w-3xl px-4 py-10">
-          <p className="text-xl">
+          <p className="text-xl" data-testid="about-intro">
             Need to summarize a text message, report, review, or an email? No
             problem!
           </p>
-          <p className="mt-2 text-xl">
+          <p className="mt-2 text-xl" data-testid="about-description">
             Sum My Text is a free online tool that allows users to summarize,
             identify topics, and describe emotional sentiment of their text.
           </p>
         </div>
 
         <div className="mx-auto max-w-xl px-4 pb-10">
-          <table className="w-full border border-black text-left">
+          <table
+            className="w-full border border-black text-left"
+            data-testid="about-capabilities-table"
+          >
             <tbody>
               <tr>
                 <td className="border-b border-black p-3 align-top">

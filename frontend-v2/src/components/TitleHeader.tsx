@@ -17,6 +17,7 @@ type TitleHeaderProps = {
   color?: string
   pt?: number
   pb?: number
+  testId?: string
 }
 
 const TitleHeader = ({
@@ -26,6 +27,7 @@ const TitleHeader = ({
   color = 'black',
   pt = 5,
   pb = 5,
+  testId,
 }: TitleHeaderProps) => {
   // MUI spacing units are 8px each; keep the original padding scale.
   const style: CSSProperties = {
@@ -35,7 +37,11 @@ const TitleHeader = ({
     paddingBottom: pb * 8,
   }
   return (
-    <p className={`text-center font-normal ${variantClasses[variant]}`} style={style}>
+    <p
+      className={`text-center font-normal ${variantClasses[variant]}`}
+      style={style}
+      data-testid={testId}
+    >
       {titleName}
     </p>
   )

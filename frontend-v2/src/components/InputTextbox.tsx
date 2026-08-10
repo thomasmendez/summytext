@@ -16,6 +16,7 @@ const InputTextbox = ({ backgroundColor = '#d3eef2' }: InputTextboxProps) => {
   return (
     <div className="rounded-md p-4 shadow" style={{ backgroundColor }}>
       <textarea
+        data-testid="input-textarea"
         className="w-full resize-y rounded-md border border-gray-300 bg-white p-3 focus:ring-2 focus:ring-sky-400 focus:outline-none"
         placeholder="Enter text you wish to summarize here..."
         rows={20}

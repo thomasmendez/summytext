@@ -63,19 +63,21 @@ const Home = () => {
   }
 
   return (
-    <div className="bg-[lavender] px-3 py-6">
+    <div className="bg-[lavender] px-3 py-6" data-testid="home-view">
       {(error || info) && (
         <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2">
           <div
+            data-testid={error ? 'snackbar-error' : 'snackbar-info'}
             className={`flex items-center gap-3 rounded-md px-4 py-3 text-white shadow-lg ${
               error ? 'bg-red-600' : 'bg-sky-600'
             }`}
           >
-            <span>{error || info}</span>
+            <span data-testid="snackbar-message">{error || info}</span>
             <button
               type="button"
               aria-label="Close"
               onClick={closeSnackbar}
+              data-testid="snackbar-close"
               className="font-bold"
             >
               ✕
@@ -88,6 +90,7 @@ const Home = () => {
         titleName="Sum My Text"
         variant="h4"
         backgroundColor="#b5ecf5"
+        testId="home-title"
       />
 
       <div className="mt-6 w-full">

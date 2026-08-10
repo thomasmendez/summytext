@@ -33,16 +33,17 @@ type LinkProps = {
   to: string
   children: ReactNode
   className?: string
+  'data-testid'?: string
 }
 
-export const Link = ({ to, children, className }: LinkProps) => {
+export const Link = ({ to, children, className, ...rest }: LinkProps) => {
   const { navigate } = useRouter()
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     navigate(to)
   }
   return (
-    <a href={to} onClick={onClick} className={className}>
+    <a href={to} onClick={onClick} className={className} {...rest}>
       {children}
     </a>
   )

@@ -2,12 +2,14 @@ type CardResultProps = {
   title?: string
   content?: string | string[]
   backgroundColor?: string
+  testId?: string
 }
 
 const CardResult = ({
   title = 'Title',
   content = ['Technology', 'History', 'Medicine'],
   backgroundColor = 'lavender',
+  testId,
 }: CardResultProps) => {
   return (
     <div
@@ -15,7 +17,7 @@ const CardResult = ({
       style={{ backgroundColor }}
     >
       <p className="mb-1 text-sm text-gray-600">{title}</p>
-      <p className="text-xl">
+      <p className="text-xl" data-testid={testId}>
         {Array.isArray(content) ? content.join(', ') : content}
       </p>
     </div>

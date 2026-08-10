@@ -1,15 +1,8 @@
-export type AnalysisData = {
-  sentiment: string
-  grammaticalCorrectness: string
-  topics: string[]
-  summary: string
-}
+import type { AnalysisData, PredictError } from '../types/analysisTypes'
 
-export type PredictError = {
-  status?: number
-  message: string
-  isNetwork: boolean
-}
+// Re-exported so existing imports from this service keep working; the canonical
+// definitions live in src/types/analysisTypes.ts.
+export type { AnalysisData, PredictError }
 
 const baseUrl = import.meta.env.VITE_SUM_MY_TEXT_SERVICE
 
