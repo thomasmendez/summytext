@@ -13,11 +13,10 @@ const ErrorView = ({ errorCode }: ErrorViewProps) => {
   const message = errorCode === 404 ? 'Not Found' : ''
 
   return (
-    <div className="min-h-[75vh] bg-[lavender]" data-testid="error-view">
+    <div className="min-h-[75vh] bg-lavender" data-testid="error-view">
       <TitleHeader
         titleName={`${errorCode} ${message}`}
-        variant="h4"
-        backgroundColor="#b5ecf5"
+        className="text-3xl py-10"
         testId="error-title"
       />
     </div>

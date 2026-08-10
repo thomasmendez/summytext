@@ -1,16 +1,10 @@
 import { Link } from '../router'
 
-type FooterProps = {
-  pt?: number
-  pb?: number
-}
-
-const Footer = ({ pt = 5, pb = 5 }: FooterProps) => {
+const Footer = () => {
   return (
     <footer
       data-testid="footer"
-      className="border-t border-gray-400 bg-[lavender] text-center"
-      style={{ paddingTop: pt * 8, paddingBottom: pb * 8 }}
+      className="border-t border-gray-400 bg-lavender py-10 text-center"
     >
       <div className="flex">
         <div className="flex-1">

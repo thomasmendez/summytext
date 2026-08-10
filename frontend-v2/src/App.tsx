@@ -23,7 +23,7 @@ const Routes = () => {
 const App = () => {
   return (
     <Router>
-      <div className="flex min-h-screen flex-col bg-[lavender]">
+      <div className="flex min-h-screen flex-col bg-lavender">
         <div className="flex-1">
           <Routes />
         </div>

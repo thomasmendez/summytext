@@ -4,13 +4,7 @@ import InputTextbox from './InputTextbox'
 const InputSummary = () => {
   return (
     <div className="w-full">
-      <TitleHeader
-        titleName="Text to Summarize"
-        variant="h5"
-        pt={3}
-        pb={3}
-        backgroundColor="#b5ecf5"
-      />
+      <TitleHeader titleName="Text to Summarize" className="text-2xl py-6" />
       <InputTextbox />
     </div>
   )

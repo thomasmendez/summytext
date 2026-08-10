@@ -7,20 +7,11 @@ const Privacy = () => {
   }, [])
 
   return (
-    <div className="bg-[lavender] text-center" data-testid="privacy-view">
-      <TitleHeader
-        titleName="Sum My Text"
-        variant="h4"
-        backgroundColor="#b5ecf5"
-      />
-      <TitleHeader
-        titleName="Privacy"
-        variant="h5"
-        backgroundColor="#b5ecf5"
-        testId="privacy-title"
-      />
+    <div className="bg-lavender text-center" data-testid="privacy-view">
+      <TitleHeader titleName="Sum My Text" className="text-3xl py-10" />
+      <TitleHeader titleName="Privacy" className="text-2xl py-10" testId="privacy-title" />
 
-      <div className="bg-[#b5ecf5] text-black">
+      <div className="bg-panel text-black">
         <div className="mx-auto max-w-3xl px-4 py-10">
           <p className="text-xl" data-testid="privacy-intro">
             Sum My Text does not store any personal data that is inputed for

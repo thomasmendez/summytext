@@ -1,4 +1,4 @@
-import type { AnalysisData } from '../../types/analysisTypes'
+import type { AnalysisData } from '../../types/analysisTypes.ts'
 
 // Simulated body for POST /api/v1/predict. Typed (not cast) against the backend
 // type so the compiler catches drift. Playwright asserts against this same

@@ -7,20 +7,11 @@ const About = () => {
   }, [])
 
   return (
-    <div className="bg-[lavender] text-center" data-testid="about-view">
-      <TitleHeader
-        titleName="Sum My Text"
-        variant="h4"
-        backgroundColor="#b5ecf5"
-      />
-      <TitleHeader
-        titleName="About"
-        variant="h5"
-        backgroundColor="#b5ecf5"
-        testId="about-title"
-      />
+    <div className="bg-lavender text-center" data-testid="about-view">
+      <TitleHeader titleName="Sum My Text" className="text-3xl py-10" />
+      <TitleHeader titleName="About" className="text-2xl py-10" testId="about-title" />
 
-      <div className="bg-[#b5ecf5] text-black">
+      <div className="bg-panel text-black">
         <div className="mx-auto max-w-3xl px-4 py-10">
           <p className="text-xl" data-testid="about-intro">
             Need to summarize a text message, report, review, or an email? No

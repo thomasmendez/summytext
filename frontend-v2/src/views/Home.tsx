@@ -63,7 +63,7 @@ const Home = () => {
   }
 
   return (
-    <div className="bg-[lavender] px-3 py-6" data-testid="home-view">
+    <div className="bg-lavender px-3 py-6" data-testid="home-view">
       {(error || info) && (
         <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2">
           <div
@@ -86,12 +86,7 @@ const Home = () => {
         </div>
       )}
 
-      <TitleHeader
-        titleName="Sum My Text"
-        variant="h4"
-        backgroundColor="#b5ecf5"
-        testId="home-title"
-      />
+      <TitleHeader titleName="Sum My Text" className="text-3xl py-10" testId="home-title" />
 
       <div className="mt-6 w-full">
         {data ? (

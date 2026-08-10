@@ -1,45 +1,15 @@
-import type { CSSProperties } from 'react'
-
-type Variant = 'h3' | 'h4' | 'h5' | 'h6' | 'body1'
-
-const variantClasses: Record<Variant, string> = {
-  h3: 'text-4xl',
-  h4: 'text-3xl',
-  h5: 'text-2xl',
-  h6: 'text-xl',
-  body1: 'text-base',
-}
-
 type TitleHeaderProps = {
   titleName: string
-  variant?: Variant
-  backgroundColor?: string
-  color?: string
-  pt?: number
-  pb?: number
+  className?: string
   testId?: string
 }
 
-const TitleHeader = ({
-  titleName,
-  variant = 'h3',
-  backgroundColor = 'lavender',
-  color = 'black',
-  pt = 5,
-  pb = 5,
-  testId,
-}: TitleHeaderProps) => {
-  // MUI spacing units are 8px each; keep the original padding scale.
-  const style: CSSProperties = {
-    backgroundColor,
-    color,
-    paddingTop: pt * 8,
-    paddingBottom: pb * 8,
-  }
+// Background/color never vary across callers; size and padding come in via
+// className (e.g. "text-3xl py-10").
+const TitleHeader = ({ titleName, className = '', testId }: TitleHeaderProps) => {
   return (
     <p
-      className={`text-center font-normal ${variantClasses[variant]}`}
-      style={style}
+      className={`bg-panel text-center font-normal text-black ${className}`}
       data-testid={testId}
     >
       {titleName}

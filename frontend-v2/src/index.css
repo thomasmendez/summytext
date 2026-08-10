@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-lavender: lavender;
+  --color-panel: #b5ecf5;
+  --color-panel-soft: #d3eef2;
+}
+
 html,
 body,
 #root {
