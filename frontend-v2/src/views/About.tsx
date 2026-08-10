@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import TitleHeader from '../components/TitleHeader'
+import ContentSection from '../components/ContentSection'
 
 const About = () => {
   useEffect(() => {
@@ -7,12 +8,12 @@ const About = () => {
   }, [])
 
   return (
-    <div className="bg-lavender text-center" data-testid="about-view">
+    <div className="bg-lavender px-3 py-6 text-center" data-testid="about-view">
       <TitleHeader titleName="Sum My Text" className="text-3xl py-10" />
-      <TitleHeader titleName="About" className="text-2xl py-10" testId="about-title" />
+      <TitleHeader titleName="About" className="mt-6 text-2xl py-10" testId="about-title" />
 
-      <div className="bg-panel text-black">
-        <div className="mx-auto max-w-3xl px-4 py-10">
+      <div className="mt-6 bg-panel text-black">
+        <ContentSection className="py-10">
           <p className="text-xl" data-testid="about-intro">
             Need to summarize a text message, report, review, or an email? No
             problem!
@@ -21,9 +22,9 @@ const About = () => {
             Sum My Text is a free online tool that allows users to summarize,
             identify topics, and describe emotional sentiment of their text.
           </p>
-        </div>
+        </ContentSection>
 
-        <div className="mx-auto max-w-xl px-4 pb-10">
+        <ContentSection className="pb-10">
           <table
             className="w-full border border-black text-left"
             data-testid="about-capabilities-table"
@@ -69,7 +70,7 @@ const About = () => {
               </tr>
             </tbody>
           </table>
-        </div>
+        </ContentSection>
       </div>
     </div>
   )
