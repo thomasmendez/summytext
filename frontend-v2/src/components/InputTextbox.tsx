@@ -1,11 +1,5 @@
 import { useAnalysis } from '../context/analysisContext'
 import SubmitButton from './SubmitButton'
-// Disabled input features (see button row below):
-// - PDF-to-text: dropped because the pdfjs-dist parsing path carried a
-//   high-severity vulnerability. Not worth the risk for a convenience feature.
-// - Speech-to-text: dropped as low-value / rarely used.
-// import PdfToTextButton from './PdfToTextButton'
-// import SpeechToTextButton from './SpeechToTextButton'
 
 type InputTextboxProps = {
   backgroundColor?: string
@@ -30,11 +24,6 @@ const InputTextbox = ({ backgroundColor = '#d3eef2' }: InputTextboxProps) => {
         onChange={(event) => handleTextFieldChange(event.target.value)}
       />
       <div className="mt-3 flex gap-2">
-        {/* PDF-to-text and speech-to-text are intentionally disabled. The
-            components remain in the repo for reference; re-enable by
-            restoring their imports and rendering them here. */}
-        {/* <SpeechToTextButton /> */}
-        {/* <PdfToTextButton /> */}
         <SubmitButton />
       </div>
     </div>
