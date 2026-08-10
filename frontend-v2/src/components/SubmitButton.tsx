@@ -1,8 +1,9 @@
-import { useAnalysis } from '../context/analysisContext'
+import { useAppDispatch, useAppSelector } from '../store'
+import { analysisActions } from '../store/analysisSlice'
 
 const SubmitButton = () => {
-  const { state, performAnalysis } = useAnalysis()
-  const { text, isLoading } = state
+  const dispatch = useAppDispatch()
+  const { text, isLoading } = useAppSelector((state) => state.analysis)
 
   if (isLoading) {
     return (
@@ -24,7 +25,7 @@ const SubmitButton = () => {
       disabled={!text}
       data-testid="submit-button"
       onClick={() => {
-        if (text) performAnalysis(text)
+        if (text) dispatch(analysisActions.performAnalysis(text))
       }}
       className="flex-1 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
     >

@@ -1,4 +1,5 @@
-import { useAnalysis } from '../context/analysisContext'
+import { useAppDispatch, useAppSelector } from '../store'
+import { analysisActions } from '../store/analysisSlice'
 import SubmitButton from './SubmitButton'
 
 type InputTextboxProps = {
@@ -8,8 +9,9 @@ type InputTextboxProps = {
 const CHARACTER_LIMIT = 5000
 
 const InputTextbox = ({ backgroundColor = '#d3eef2' }: InputTextboxProps) => {
-  const { state, handleTextFieldChange } = useAnalysis()
-  const value = state.text ?? state.previousText ?? ''
+  const dispatch = useAppDispatch()
+  const { text, previousText } = useAppSelector((state) => state.analysis)
+  const value = text ?? previousText ?? ''
 
   return (
     <div className="rounded-md p-4 shadow" style={{ backgroundColor }}>
@@ -21,7 +23,7 @@ const InputTextbox = ({ backgroundColor = '#d3eef2' }: InputTextboxProps) => {
         maxLength={CHARACTER_LIMIT}
         value={value}
         autoFocus
-        onChange={(event) => handleTextFieldChange(event.target.value)}
+        onChange={(event) => dispatch(analysisActions.handleTextFieldChange(event.target.value))}
       />
       <div className="mt-3 flex gap-2">
         <SubmitButton />

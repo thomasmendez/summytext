@@ -1,8 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { Provider } from 'react-redux'
 import App from './App.tsx'
-import { AnalysisProvider } from './context/AnalysisProvider'
+import { store } from './store'
 
 // Start the MSW worker only when explicitly enabled (dev demos + Playwright).
 // It never runs in a normal production build.
@@ -22,9 +23,9 @@ async function enableMocking() {
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <AnalysisProvider>
+      <Provider store={store}>
         <App />
-      </AnalysisProvider>
+      </Provider>
     </StrictMode>,
   )
 })

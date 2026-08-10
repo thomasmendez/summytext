@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { useAnalysis } from '../context/analysisContext'
+import { useAppDispatch, useAppSelector } from '../store'
+import { analysisActions } from '../store/analysisSlice'
 import { performAnalysis as callAnalysis } from '../services/sumMyTextService'
 import type { PredictError } from '../services/sumMyTextService'
 import TitleHeader from '../components/TitleHeader'
@@ -7,15 +8,10 @@ import InputSummary from '../components/InputSummary'
 import Analysis from '../components/Analysis'
 
 const Home = () => {
-  const {
-    state,
-    completedAnalysis,
-    errorAnalysis,
-    infoAnalysis,
-    clearInfoAnalysis,
-    clearErrorAnalysis,
-  } = useAnalysis()
-  const { isLoading, text, data, info, error } = state
+  const dispatch = useAppDispatch()
+  const { isLoading, text, data, info, error } = useAppSelector(
+    (state) => state.analysis,
+  )
 
   const infoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -27,21 +23,21 @@ const Home = () => {
     if (!isLoading) return
 
     const timer = setInterval(() => {
-      infoAnalysis('The request is taking longer than expected. Please wait')
+      dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'))
     }, 7000)
     infoTimerRef.current = timer
 
     callAnalysis(text ?? '')
       .then((res) => {
         clearInterval(timer)
-        clearInfoAnalysis()
-        completedAnalysis(res)
+        dispatch(analysisActions.clearInfoAnalysis())
+        dispatch(analysisActions.completedAnalysis(res))
       })
       .catch((err: PredictError) => {
         clearInterval(timer)
-        clearInfoAnalysis()
+        dispatch(analysisActions.clearInfoAnalysis())
         console.error(err)
-        errorAnalysis(err.message ?? 'Something went wrong. Please try again later.')
+        dispatch(analysisActions.errorAnalysis(err.message ?? 'Something went wrong. Please try again later.'))
       })
 
     return () => clearInterval(timer)
@@ -52,14 +48,14 @@ const Home = () => {
   // MUI Snackbar behaviour.
   useEffect(() => {
     if (!error) return
-    const timeout = setTimeout(() => clearErrorAnalysis(), 10000)
+    const timeout = setTimeout(() => dispatch(analysisActions.clearErrorAnalysis()), 10000)
     return () => clearTimeout(timeout)
-  }, [error, clearErrorAnalysis])
+  }, [error, dispatch])
 
   const closeSnackbar = () => {
     if (infoTimerRef.current) clearInterval(infoTimerRef.current)
-    clearErrorAnalysis()
-    clearInfoAnalysis()
+    dispatch(analysisActions.clearErrorAnalysis())
+    dispatch(analysisActions.clearInfoAnalysis())
   }
 
   return (
