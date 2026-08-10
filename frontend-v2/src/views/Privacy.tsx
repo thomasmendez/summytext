@@ -18,7 +18,7 @@ const Privacy = () => {
             summarizing.
           </p>
           <p className="mt-2 text-xl" data-testid="privacy-no-storage">
-            No data that is typed or imported from a PDF is stored.
+            No data that is typed is stored.
           </p>
         </div>
         <div className="mx-auto max-w-3xl px-4 pb-10">
