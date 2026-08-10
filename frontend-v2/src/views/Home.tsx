@@ -4,7 +4,7 @@ import { analysisActions } from '../store/analysisSlice'
 import { performAnalysis as callAnalysis } from '../services/sumMyTextService'
 import type { PredictError } from '../services/sumMyTextService'
 import TitleHeader from '../components/TitleHeader'
-import InputSummary from '../components/InputSummary'
+import InputTextbox from '../components/InputTextbox'
 import Analysis from '../components/Analysis'
 
 const Home = () => {
@@ -88,7 +88,7 @@ const Home = () => {
         {data ? (
           <div className="flex flex-col gap-6 sm:flex-row">
             <div className="w-full sm:w-1/2">
-              <InputSummary />
+              <InputTextbox />
             </div>
             <div className="w-full sm:w-1/2">
               <Analysis
@@ -100,7 +100,7 @@ const Home = () => {
           </div>
         ) : (
           <div className="w-full">
-            <InputSummary />
+            <InputTextbox />
           </div>
         )}
       </div>

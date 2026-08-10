@@ -5,7 +5,6 @@ import type { AnalysisData } from '../../types/analysisTypes.ts'
 // fixture so mock and test never disagree.
 const AnalysisMock: AnalysisData = {
   sentiment: 'Positive',
-  grammaticalCorrectness: 'Correct',
   topics: ['Technology', 'Science', 'Education'],
   summary:
     'Sum My Text turns long passages into a short, readable summary while also '

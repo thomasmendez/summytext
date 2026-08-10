@@ -2,13 +2,9 @@ import type { AnalysisData } from '../services/sumMyTextService'
 import TitleHeader from './TitleHeader'
 import CardResult from './CardResult'
 
-type AnalysisProps = Partial<AnalysisData>
+type AnalysisProps = AnalysisData
 
-const Analysis = ({
-  sentiment = 'Positive',
-  topics = ['Technology', 'History', 'Medicine'],
-  summary = 'My text summary',
-}: AnalysisProps) => {
+const Analysis = ({ sentiment, topics, summary }: AnalysisProps) => {
   return (
     <div className="w-full" data-testid="analysis-view">
       <TitleHeader titleName="Analysis" className="text-2xl py-6" testId="analysis-title" />

@@ -3,7 +3,6 @@
 
 export type AnalysisData = {
   sentiment: string
-  grammaticalCorrectness: string
   topics: string[]
   summary: string
 }
