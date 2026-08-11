@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  summytext frontend (v2) - static site hosting. A private S3 bucket holding the
+  Vite build output, fronted by a CloudFront distribution via Origin Access
+  Control (OAC). One stack per environment (dev/stg/prd). Deployed with
+  `sam deploy`; the built assets are uploaded separately with `aws s3 sync`
+  (see README). No custom domain -- serves on the CloudFront default domain.
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [dev, stg, prd, test]
+    Description: >
+      Deployment environment. Drives resource names. Match this to the Vite
+      build mode used for the assets you upload (`--mode dev|stg|prd`), so the
+      backend URL baked into the bundle matches the environment.
+      `test` is for throwaway/scratch stacks only -- delete when done.
+
+Resources:
+  # Private origin bucket. No public access, no S3 website endpoint -- CloudFront
+  # reaches it through OAC (below), which is the AWS-recommended secure pattern.
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub summytext-frontend-${Environment}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # Lets CloudFront sign requests to the private bucket. Replaces the legacy OAI.
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub summytext-frontend-${Environment}-oac
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub summytext-frontend-${Environment}
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: SiteBucketOrigin
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !Ref OriginAccessControl
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          TargetOriginId: SiteBucketOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          # AWS managed "CachingOptimized" policy.
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        # SPA: the client-side router owns deep links. A private-bucket miss
+        # returns 403 (not 404), so map both back to index.html with a 200 so
+        # refreshing /about doesn't error.
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+  # Allow only this distribution to read the bucket (scoped by SourceArn).
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub ${SiteBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}
+
+Outputs:
+  SiteUrl:
+    Description: Public HTTPS URL of the site (CloudFront default domain).
+    Value: !Sub https://${CloudFrontDistribution.DomainName}
+  BucketName:
+    Description: Sync the Vite `dist/` output here (`aws s3 sync dist/ s3://<this>`).
+    Value: !Ref SiteBucket
+  DistributionId:
+    Description: Use for cache invalidation after each deploy.
+    Value: !Ref CloudFrontDistribution

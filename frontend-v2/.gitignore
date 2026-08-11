@@ -24,6 +24,11 @@ dist-ssr
 *.sw?
 
 .env
+.env.dev
+.env.prd
+.env.stg
+
+samconfig.toml
 
 # Playwright
 /test-results/
