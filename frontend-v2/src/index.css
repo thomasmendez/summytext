@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-lavender: lavender;
+  --color-panel: #b5ecf5;
+  --color-panel-soft: #d3eef2;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: lavender;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}

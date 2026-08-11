@@ -53,6 +53,18 @@ more reliable path for the infrequent but heavy cold-start workload.
 ### Removed
 
 - API Gateway from the backend request path, replaced by the Lambda Function URL.
+- **PDF-to-text input** from the frontend
+  (`frontend-v2/src/components/InputTextbox.tsx`). The extraction path relied on
+  `pdfjs-dist`, which carried a high-severity vulnerability (arbitrary
+  JavaScript execution when parsing a malicious PDF). The convenience of
+  importing text from a PDF isn't worth reintroducing that risk, so the button
+  is commented out of the input row. The `PdfToTextButton` component is kept in
+  the repo for reference.
+- **Speech-to-text input** from the frontend
+  (`frontend-v2/src/components/InputTextbox.tsx`). Removed as a low-value,
+  rarely used feature. The `SpeechToTextButton` component is kept in the repo
+  for reference and can be re-enabled by restoring its import and rendering it
+  in the input row.
 
 ## [1.0.0] - 2024-06-21
 
