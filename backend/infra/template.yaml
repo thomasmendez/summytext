@@ -51,7 +51,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      RepositoryName: !Sub summytext-backend-${Environment}
+      RepositoryName: !Sub summytext-backend-v2-${Environment}
       ImageScanningConfiguration:
         ScanOnPush: true
       LifecyclePolicy:
@@ -75,13 +75,13 @@ Resources:
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/summytext-backend-${Environment}
+      LogGroupName: !Sub /aws/lambda/summytext-backend-v2-${Environment}
       RetentionInDays: !Ref LogRetentionInDays
 
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub summytext-backend-${Environment}-lambda-role
+      RoleName: !Sub summytext-backend-v2-${Environment}-lambda-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -102,7 +102,7 @@ Resources:
       DockerContext: ../
       DockerTag: latest
     Properties:
-      FunctionName: !Sub summytext-backend-${Environment}
+      FunctionName: !Sub summytext-backend-v2-${Environment}
       PackageType: Image
       Role: !GetAtt LambdaExecutionRole.Arn
       MemorySize: !Ref MemorySize
