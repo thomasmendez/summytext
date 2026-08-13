@@ -10,7 +10,7 @@ Description: >
 Parameters:
   Environment:
     Type: String
-    AllowedValues: [dev, stg, prd, test]
+    AllowedValues: [dev, stg, prd]
     Description: >
       Deployment environment. Drives resource names. Match this to the Vite
       build mode used for the assets you upload (`--mode dev|stg|prd`), so the
@@ -25,7 +25,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      BucketName: !Sub summytext-frontend-${Environment}
+      BucketName: !Sub summytext-frontend-v2-${Environment}
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -37,7 +37,7 @@ Resources:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
       OriginAccessControlConfig:
-        Name: !Sub summytext-frontend-${Environment}-oac
+        Name: !Sub summytext-frontend-v2-${Environment}-oac
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
@@ -47,7 +47,7 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
-        Comment: !Sub summytext-frontend-${Environment}
+        Comment: !Sub summytext-frontend-v2-${Environment}
         DefaultRootObject: index.html
         PriceClass: PriceClass_100
         Origins:
