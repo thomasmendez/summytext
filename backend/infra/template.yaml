@@ -1,22 +1,19 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  summytext backend - container-image Lambda (flair/transformers predict endpoint)
-  exposed directly via a Lambda Function URL. Built and deployed with `sam build`
-  / `sam deploy --guided`, which builds the Dockerfile in ../ and pushes the
-  resulting image to ECR as part of the deploy. One stack per environment
-  (dev/stg/prd).
+  summytext backend - container-image Lambda (predict
+  endpoint) exposed directly via a Lambda Function URL. One stack per
+  environment (dev/stg/prd). ECR is fully SAM-managed (no AWS::ECR::Repository
+  here on purpose -- see README.md "ECR is SAM-managed"). Deploy with
+  `sam deploy --guided --resolve-image-repos`, then `sam deploy` thereafter.
 
 Parameters:
   Environment:
     Type: String
-    AllowedValues: [dev, stg, prd, test]
+    AllowedValues: [dev, stg, prd]
     Description: >
       Deployment environment. Drives resource names and the ENV variable
       passed to the app (which selects CORS origins).
-      `test` is for throwaway/scratch stacks only (e.g. verifying a deploy
-      end-to-end without touching real dev/stg/prd resources) — delete the
-      stack when done with it.
 
   MemorySize:
     Type: Number
@@ -46,31 +43,9 @@ Parameters:
     Default: 14
 
 Resources:
-  EcrRepository:
-    Type: AWS::ECR::Repository
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
-    Properties:
-      RepositoryName: !Sub summytext-backend-v2-${Environment}
-      ImageScanningConfiguration:
-        ScanOnPush: true
-      LifecyclePolicy:
-        LifecyclePolicyText: |
-          {
-            "rules": [
-              {
-                "rulePriority": 1,
-                "description": "Expire untagged images after 14 days",
-                "selection": {
-                  "tagStatus": "untagged",
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 14
-                },
-                "action": { "type": "expire" }
-              }
-            ]
-          }
+  # ponytail: no AWS::ECR::Repository here on purpose -- SAM manages ECR via the
+  # companion stack (see top-of-file Description). A repo declared in this stack
+  # can't receive the image; the push precedes stack creation.
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -134,6 +109,3 @@ Outputs:
 
   LambdaFunctionArn:
     Value: !GetAtt LambdaFunction.Arn
-
-  EcrRepositoryUri:
-    Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepository}
