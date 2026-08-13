@@ -1,7 +1,6 @@
 # summytext frontend infra
 
-`template.yaml` is an AWS SAM template (plain CloudFormation resources — SAM
-deploys it the same as the backend). It provisions, per environment
+`template.yaml` is an AWS SAM template (plain CloudFormation resources). It provisions, per environment
 (`dev`/`stg`/`prd`):
 
 - a **private S3 bucket** (`summytext-frontend-<env>`) holding the Vite build
@@ -21,14 +20,13 @@ output into the bucket as a separate step (below). Splitting them keeps
 infra changes and content pushes independent — you redeploy the stack rarely,
 but ship new assets often.
 
-## Environments (local / dev / stg / prd)
+## Environments (dev / stg / prd)
 
 The backend URL is baked into the bundle at **build time** via Vite's mode
 system. One env file per mode drives which backend a build points at:
 
 | Mode / env | Vite env file      | Build command       | Backend            |
 | ---------- | ------------------ | ------------------- | ------------------ |
-| local      | `.env` (gitignored, from `.env.example`) | `npm run dev` | localhost or MSW mocks |
 | dev        | `.env.dev`         | `npm run build:dev` | dev Lambda URL     |
 | stg        | `.env.stg`         | `npm run build:stg` | stg Lambda URL     |
 | prd        | `.env.prd`         | `npm run build:prd` | prd Lambda URL     |
@@ -36,7 +34,7 @@ system. One env file per mode drives which backend a build points at:
 `.env.dev`/`.env.stg`/`.env.prd` are committed but ship with placeholder URLs —
 fill each `VITE_SUM_MY_TEXT_SERVICE` with that environment's backend Function
 URL (the `FunctionUrl` output from `backend/infra`'s `sam deploy`, **without**
-the trailing slash). Local dev stays personal in the gitignored `.env`.
+the trailing slash).
 
 ## Prerequisites
 
@@ -46,8 +44,6 @@ the trailing slash). Local dev stays personal in the gitignored `.env`.
 - Your admin role/profile configured and active (`aws configure` / `AWS_PROFILE`
   / `aws sso login`)
 - Node 20.19+/22.12+ and npm (to build the app)
-
-No Docker needed here (unlike the backend).
 
 ## Deploy the infrastructure
 
@@ -90,7 +86,6 @@ CloudFront cache so viewers get the new assets immediately:
 
 ```sh
 cd frontend-v2
-npm ci
 npm run build:dev          # or build:stg / build:prd
 
 aws s3 sync dist/ s3://summytext-frontend-dev --delete
@@ -108,19 +103,4 @@ traffic.
 
 ```sh
 sam validate --template-file template.yaml
-# or a stricter lint:
-pip install cfn-lint && cfn-lint template.yaml
 ```
-
-## Notes / known gaps
-
-- **CORS**: the browser calls the backend Function URL cross-origin. The backend
-  drives its allowed origins from its `ENV` var (see `backend/app/main.py`) — the
-  CloudFront domain for each environment must be in that allow-list, or the
-  predict call is blocked. Add the `SiteUrl` output to the backend's CORS
-  origins for that environment.
-- **No custom domain / TLS cert**: serves on the CloudFront default domain only.
-  Add `AWS::CertificateManager::Certificate` (in us-east-1) + an `Aliases` entry
-  and a Route 53 record when a real domain is wanted.
-- **First deploy is slow**: a new CloudFront distribution takes ~5–15 min to
-  finish deploying before `SiteUrl` responds.
