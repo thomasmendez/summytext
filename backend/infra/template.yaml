@@ -12,8 +12,7 @@ Parameters:
     Type: String
     AllowedValues: [dev, stg, prd]
     Description: >
-      Deployment environment. Drives resource names and the ENV variable
-      passed to the app (which selects CORS origins).
+      Deployment environment. Drives resource names.
 
   MemorySize:
     Type: Number
@@ -41,6 +40,12 @@ Parameters:
   LogRetentionInDays:
     Type: Number
     Default: 14
+
+  CorsOrigins:
+    Type: String
+    Description: >
+      Comma-separated CORS origins to allow for this environment, e.g. the
+      frontend-v2 CloudFront SiteUrl output.
 
 Resources:
   # ponytail: no AWS::ECR::Repository here on purpose -- SAM manages ECR via the
@@ -84,17 +89,19 @@ Resources:
       Timeout: !Ref Timeout
       Environment:
         Variables:
-          # Drives the CORS origins in app/main.py. PROXY is intentionally left
-          # unset: a Function URL has no stage path prefix (unlike the old HTTP
-          # API's /{env} stage), so FastAPI's root_path must stay empty.
+          # PROXY is intentionally left unset: a Function URL has no stage path
+          # prefix (unlike the old HTTP API's /{env} stage), so FastAPI's
+          # root_path must stay empty.
           ENV: !Ref Environment
+          CORS_ORIGINS: !Ref CorsOrigins
       # Expose the function directly via a Lambda Function URL instead of API
       # Gateway. HTTP APIs have a hard 30s integration timeout that cannot be
       # raised, so cold starts (~60s while models load) always 504'd and the
       # frontend retried. Function URLs honor the full function Timeout (up to
       # 15 min), so a cold request completes instead of failing. CORS is handled
-      # by FastAPI's CORSMiddleware (env-driven) -- configuring a Cors block here
-      # too would emit duplicate Access-Control-* headers and break the browser.
+      # by FastAPI's CORSMiddleware (CORS_ORIGINS-driven) -- configuring a Cors
+      # block here too would emit duplicate Access-Control-* headers and break
+      # the browser.
       FunctionUrlConfig:
         AuthType: NONE
 

@@ -12,22 +12,12 @@ from mangum import Mangum
 
 app = FastAPI()
 
-origins = []
-
 if (env != None and env != 'local') and (proxy != None and proxy == 'true'):
     app.root_path = f'/{env}'
 
-if env == 'local' or env == 'test':
-    origins.append('http://localhost:8080')
-
-if env == 'dev':
-    origins.append('*')
-
-if env == 'stg':
-    origins.append('http://summytext-stg.s3-website.us-east-2.amazonaws.com')
-
-if env == 'prd':
-    origins.append('https://summytext.com')
+# CORS origins come entirely from the CloudFormation template (CORS_ORIGINS
+# stack parameter), comma-separated -- no env-mapped defaults here.
+origins = [o.strip() for o in os.getenv('CORS_ORIGINS', '').split(',') if o.strip()]
 
 from fastapi.responses import JSONResponse
 from cachetools import LRUCache
