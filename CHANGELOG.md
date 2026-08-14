@@ -5,80 +5,53 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [2.0.0] - 2026-08-??
+## [2.0.0] - 2026-08-14
 
-Backend deployment refactor (`refactor/deployment`). Reworked how the backend is
-packaged, deployed, and exposed, targeting a self-contained deploy and a faster,
-more reliable path for the infrequent but heavy cold-start workload.
+Full-stack rewrite and deployment refactor: the backend is now a self-contained,
+faster cold-start deploy, and the frontend was rebuilt from scratch on a modern
+stack.
 
-### Added
+### Backend
 
-- **AWS SAM template** (`backend/infra/template.yaml`) as the backend's
-  infrastructure-as-code: ECR repository, container-image Lambda, IAM role, log
-  group, and public endpoint, all provisioned with `sam build` / `sam deploy`
-  from your machine (no CI dependency). Documented in `backend/infra/README.md`.
-- **Lambda Function URL** as the public endpoint (`AuthType: NONE`) for direct
-  access to the function. Unlike API Gateway's hard 30s integration timeout, a
-  Function URL honors the full Lambda timeout, so a cold-start request (~60s
-  while models load) completes instead of returning a 504.
-- **Models baked into the container image at build time**
-  (`scripts/bake_models.py`, with `HF_HUB_OFFLINE` / `TRANSFORMERS_OFFLINE`
-  enforced at runtime) so no model files are downloaded on cold start.
-- Lazy, timing-instrumented model loading (`app/models.py`) so heavy imports
-  don't block Lambda init.
-- Backend test scaffolding (`backend/tests/`) and dev requirements.
-- Cold-start / cost analysis notes (`backend/infra/cold-start-optimization.md`).
+- **Self-contained SAM deploy** (`backend/infra/`): ECR repo, container-image
+  Lambda, IAM role, log group, and public endpoint provisioned via
+  `sam build` / `sam deploy` — no CI or Terraform submodule dependency.
+- **Lambda Function URL** replaces API Gateway. It honors the full Lambda
+  timeout, so a ~60s cold-start request completes instead of hitting API
+  Gateway's 30s ceiling and returning a 504.
+- **Models baked into the image at build time** (`scripts/bake_models.py`, with
+  offline mode enforced at runtime) so nothing is downloaded on cold start.
+- Lazy, timing-instrumented model loading so heavy imports don't block Lambda
+  init.
+- Rate-limit middleware no longer counts CORS preflight (`OPTIONS`) requests
+  against a caller's hourly quota.
+- Dependencies pinned and switched to CPU-only PyTorch wheels; dropped unused
+  `spacy`. Added test scaffolding and cold-start/cost analysis notes.
 
-### Changed
+### Infrastructure
 
-- **Fewer frontend API calls** (`frontend/src/services/sumMyTextService.ts`):
-  request retries reduced from **10 to 2** with exponential backoff, plus an
-  explicit 120s timeout. Cold requests now complete on the first call over the
-  Function URL, so the client no longer retries into the 30s ceiling and no
-  longer risks spawning additional cold containers per retry.
-- Rate-limit middleware (`app/main.py`) no longer counts CORS preflight
-  (`OPTIONS`) requests against a caller's hourly quota.
-- Deployment mechanism is now the in-repo SAM template rather than the
-  Terraform-module git submodule (`workflows/`) driven by GitHub Actions.
-- Backend dependencies pinned and switched to CPU-only PyTorch wheels; dropped
-  the unused `spacy` dependency.
-- **Frontend rewritten from scratch**, replacing the entire
-  `frontend/` app: React 17 → 19, JavaScript → TypeScript, Create React
-  App/Webpack → **Vite**, MUI/Emotion → **Tailwind CSS**, Redux Toolkit 1 →
-  2 / react-redux 8 → 9, and `axios`/`axios-retry` → native `fetch`. Storybook
-  and Jest are gone; component-level docs aren't replaced, and testing moved
-  to Playwright e2e tests (`frontend/e2e/`) plus `msw` request mocks.
-  `react-router-dom` was dropped for a small in-house history-based router
-  (`frontend/src/router.tsx`), since the app only ever had two routes.
+- **Migrated to AWS SAM / CloudFormation stacks**, replacing the old GitHub
+  Actions + Terraform-module git submodule (`workflows/`) deployment. Both
+  backend and frontend now ship from in-repo SAM templates (`backend/infra/`,
+  `frontend/infra/`) via `sam build` / `sam deploy` — no CI pipeline or external
+  Terraform repo required.
 
-### Added
+### Frontend
 
-- **Frontend deployment infra**
-  (`frontend/infra/template.yaml`, `frontend/infra/README.md`): AWS SAM
-  template provisioning a private S3 bucket + CloudFront (via Origin Access
-  Control) per environment, with SPA fallback routing. No custom
-  domain/Route 53/ACM yet — v1 had a custom domain; not carried over.
-
-### Removed
-
-- API Gateway from the backend request path, replaced by the Lambda Function URL.
-- **Legacy `frontend/` app** deleted outright (Create React App/Webpack build,
-  Yarn PnP, Storybook, ~58k-line `yarn.lock`), superseded by `frontend`
-  above.
-- **Google Analytics pageview tracking** (`react-ga4`, `frontend/src/analytics/TrackRoute.js`).
-  Not carried over to `frontend`; no replacement yet.
-- **PDF-to-text input** from the frontend
-  (`frontend/src/components/InputTextbox.tsx`). The extraction path relied on
-  `pdfjs-dist`, which carried a high-severity vulnerability (arbitrary
-  JavaScript execution when parsing a malicious PDF). The convenience of
-  importing text from a PDF isn't worth reintroducing that risk, so the button
-  is commented out of the input row. The `PdfToTextButton` component is kept in
-  the repo for reference.
-- **Speech-to-text input** from the frontend
-  (`frontend/src/components/InputTextbox.tsx`). Removed as a low-value,
-  rarely used feature. The `SpeechToTextButton` component is kept in the repo
-  for reference and can be re-enabled by restoring its import and rendering it
-  in the input row.
+- **Rewritten from scratch**: React 17 → 19, JS → TypeScript, CRA/Webpack →
+  **Vite**, MUI/Emotion → **Tailwind CSS**, Redux Toolkit 1 → 2, and
+  `axios`/`axios-retry` → native `fetch`. Testing moved to Playwright e2e +
+  `msw` mocks; `react-router-dom` replaced by a small in-house router (only two
+  routes). Legacy app (incl. ~58k-line `yarn.lock`) deleted outright.
+- **Fewer API calls**: request retries cut from 10 → 2 with a 120s timeout.
+  Cold requests now succeed on the first call over the Function URL instead of
+  retrying into the old 30s ceiling and spawning extra cold containers.
+- **Deployment infra** (`frontend/infra/`): SAM template for a private S3 bucket
+  + CloudFront (Origin Access Control) per environment, with SPA fallback
+  routing. No custom domain/Route 53/ACM yet.
+- **Removed**: Google Analytics pageview tracking; PDF-to-text input (dropped
+  the `pdfjs-dist` arbitrary-JS-execution vulnerability); speech-to-text input
+  (low-value). PDF/speech components kept in-repo for reference.
 
 ## [1.0.0] - 2024-06-21
 
