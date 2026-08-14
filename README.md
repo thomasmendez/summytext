@@ -55,4 +55,4 @@ Repository for https://summytext.com
 
 ## Architecture 
 
-![Sum My Text Architecture](https://github.com/thomasmendez/summytext/blob/main/docs/images/SumMyTextArchitectureDiagram.png)
+![Sum My Text Architecture](https://github.com/thomasmendez/summytext/blob/main/diagrams/SumMyTextArchitectureDiagramV2.png)
