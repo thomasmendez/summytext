@@ -31,7 +31,7 @@ more reliable path for the infrequent but heavy cold-start workload.
 
 ### Changed
 
-- **Fewer frontend API calls** (`frontend/src/services/sumMyTextService.js`):
+- **Fewer frontend API calls** (`frontend-v2/src/services/sumMyTextService.ts`):
   request retries reduced from **10 to 2** with exponential backoff, plus an
   explicit 120s timeout. Cold requests now complete on the first call over the
   Function URL, so the client no longer retries into the 30s ceiling and no
@@ -42,10 +42,31 @@ more reliable path for the infrequent but heavy cold-start workload.
   Terraform-module git submodule (`workflows/`) driven by GitHub Actions.
 - Backend dependencies pinned and switched to CPU-only PyTorch wheels; dropped
   the unused `spacy` dependency.
+- **Frontend rewritten from scratch**, replacing the entire
+  `frontend/` app: React 17 → 19, JavaScript → TypeScript, Create React
+  App/Webpack → **Vite**, MUI/Emotion → **Tailwind CSS**, Redux Toolkit 1 →
+  2 / react-redux 8 → 9, and `axios`/`axios-retry` → native `fetch`. Storybook
+  and Jest are gone; component-level docs aren't replaced, and testing moved
+  to Playwright e2e tests (`frontend-v2/e2e/`) plus `msw` request mocks.
+  `react-router-dom` was dropped for a small in-house history-based router
+  (`frontend-v2/src/router.tsx`), since the app only ever had two routes.
+
+### Added
+
+- **Frontend deployment infra**
+  (`frontend-v2/infra/template.yaml`, `frontend-v2/infra/README.md`): AWS SAM
+  template provisioning a private S3 bucket + CloudFront (via Origin Access
+  Control) per environment, with SPA fallback routing. No custom
+  domain/Route 53/ACM yet — v1 had a custom domain; not carried over.
 
 ### Removed
 
 - API Gateway from the backend request path, replaced by the Lambda Function URL.
+- **Legacy `frontend/` app** deleted outright (Create React App/Webpack build,
+  Yarn PnP, Storybook, ~58k-line `yarn.lock`), superseded by `frontend-v2`
+  above.
+- **Google Analytics pageview tracking** (`react-ga4`, `frontend/src/analytics/TrackRoute.js`).
+  Not carried over to `frontend-v2`; no replacement yet.
 - **PDF-to-text input** from the frontend
   (`frontend-v2/src/components/InputTextbox.tsx`). The extraction path relied on
   `pdfjs-dist`, which carried a high-severity vulnerability (arbitrary
