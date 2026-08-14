@@ -6,41 +6,18 @@ import os
 load_dotenv()
 env = os.getenv('ENV')
 proxy = os.getenv('PROXY')
-import flair
-from pathlib import Path
-
-if env != None and env != 'local':
-    os.environ['TRANSFORMERS_CACHE'] = '/tmp/transformers/cache/'
-    flair.cache_root = Path('/tmp/.flair')
-
-from summarizer import TransformerSummarizer
-from flair.nn import Classifier
-
-summarizer_transformer = TransformerSummarizer(transformer_type='GPT2',transformer_model_key='gpt2-medium')
-sentiment_classifier = Classifier.load('sentiment')
-topic_labels_classifier = Classifier.load('ner-ontonotes-large')
 
 from app.api.api_v1.api import router as api_router
 from mangum import Mangum
 
 app = FastAPI()
 
-origins = []
-
 if (env != None and env != 'local') and (proxy != None and proxy == 'true'):
     app.root_path = f'/{env}'
 
-if env == 'local':
-    origins.append('http://localhost:8080')
-
-if env == 'dev':
-    origins.append('*')
-
-if env == 'stg':
-    origins.append('http://summytext-stg.s3-website.us-east-2.amazonaws.com')
-
-if env == 'prd':
-    origins.append('https://summytext.com')
+# CORS origins come entirely from the CloudFormation template (CORS_ORIGINS
+# stack parameter), comma-separated -- no env-mapped defaults here.
+origins = [o.strip() for o in os.getenv('CORS_ORIGINS', '').split(',') if o.strip()]
 
 from fastapi.responses import JSONResponse
 from cachetools import LRUCache
@@ -54,6 +31,12 @@ CACHE_EXPIRATION = 3600  # Expiration time for cache entries in seconds
 
 @app.middleware("http")
 async def cache_requests(request, call_next):
+    # CORS preflight requests shouldn't count against the caller's quota: the
+    # browser sends an OPTIONS before each cross-origin POST, which would
+    # otherwise double every client's request count and trip the rate limit.
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     ip_address = request.client.host
 
     # Get the current timestamp

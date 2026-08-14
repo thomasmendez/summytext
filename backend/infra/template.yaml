@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  summytext backend - container-image Lambda (predict
+  endpoint) exposed directly via a Lambda Function URL. One stack per
+  environment (dev/stg/prd). ECR is fully SAM-managed (no AWS::ECR::Repository
+  here on purpose -- see README.md "ECR is SAM-managed"). Deploy with
+  `sam deploy --guided --resolve-image-repos`, then `sam deploy` thereafter.
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [dev, stg, prd]
+    Description: >
+      Deployment environment. Drives resource names.
+
+  MemorySize:
+    Type: Number
+    Default: 10240
+    MinValue: 128
+    MaxValue: 10240
+    Description: >
+      Lambda memory in MB. The baked-in models are ~4GB of weights resident in
+      memory; keep enough headroom above that for request handling. Lambda
+      also scales CPU allocation with memory, which speeds up the heavy
+      torch/transformers/flair imports and model deserialization on cold
+      start — set to the max while cold-start duration is still being
+      diagnosed.
+
+  Timeout:
+    Type: Number
+    Default: 900
+    MinValue: 1
+    MaxValue: 900
+    Description: >
+      Lambda function timeout in seconds. Models are lazy-loaded on first
+      request after a cold start, so this needs to comfortably cover that
+      first, slower request.
+
+  LogRetentionInDays:
+    Type: Number
+    Default: 14
+
+  CorsOrigins:
+    Type: String
+    Description: >
+      Comma-separated CORS origins to allow for this environment, e.g. the
+      frontend-v2 CloudFront SiteUrl output.
+
+Resources:
+  # No AWS::ECR::Repository here on purpose -- SAM manages ECR via the
+  # companion stack (see top-of-file Description). A repo declared in this stack
+  # can't receive the image; the push precedes stack creation.
+
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/summytext-backend-v2-${Environment}
+      RetentionInDays: !Ref LogRetentionInDays
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub summytext-backend-v2-${Environment}-lambda-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: LambdaLogGroup
+    Metadata:
+      # Tells `sam build` how to build the image: Dockerfile and app code live
+      # one level up from this template, in backend/.
+      Dockerfile: Dockerfile
+      DockerContext: ../
+      DockerTag: latest
+    Properties:
+      FunctionName: !Sub summytext-backend-v2-${Environment}
+      PackageType: Image
+      Role: !GetAtt LambdaExecutionRole.Arn
+      MemorySize: !Ref MemorySize
+      Timeout: !Ref Timeout
+      Environment:
+        Variables:
+          # PROXY is intentionally left unset: a Function URL has no stage path
+          # prefix (unlike the old HTTP API's /{env} stage), so FastAPI's
+          # root_path must stay empty.
+          ENV: !Ref Environment
+          CORS_ORIGINS: !Ref CorsOrigins
+      # Expose the function directly via a Lambda Function URL instead of API
+      # Gateway. HTTP APIs have a hard 30s integration timeout that cannot be
+      # raised, so cold starts (~60s while models load) always 504'd and the
+      # frontend retried. Function URLs honor the full function Timeout (up to
+      # 15 min), so a cold request completes instead of failing. CORS is handled
+      # by FastAPI's CORSMiddleware (CORS_ORIGINS-driven) -- configuring a Cors
+      # block here too would emit duplicate Access-Control-* headers and break
+      # the browser.
+      FunctionUrlConfig:
+        AuthType: NONE
+
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub summytext-backend-v2-${Environment}
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            { "type": "metric", "x": 0, "y": 0, "width": 12, "height": 6,
+              "properties": { "title": "API usage - predict invocations",
+                "region": "${AWS::Region}", "stat": "Sum", "period": 3600, "view": "timeSeries",
+                "metrics": [ [ "AWS/Lambda", "Invocations", "FunctionName", "summytext-backend-v2-${Environment}" ] ] } },
+            { "type": "metric", "x": 12, "y": 0, "width": 12, "height": 6,
+              "properties": { "title": "Errors & throttles",
+                "region": "${AWS::Region}", "stat": "Sum", "period": 3600, "view": "timeSeries",
+                "metrics": [
+                  [ "AWS/Lambda", "Errors", "FunctionName", "summytext-backend-v2-${Environment}" ],
+                  [ "AWS/Lambda", "Throttles", "FunctionName", "summytext-backend-v2-${Environment}" ] ] } },
+            { "type": "metric", "x": 0, "y": 6, "width": 12, "height": 6,
+              "properties": { "title": "Duration (cold-start visibility)",
+                "region": "${AWS::Region}", "period": 3600, "view": "timeSeries",
+                "metrics": [
+                  [ "AWS/Lambda", "Duration", "FunctionName", "summytext-backend-v2-${Environment}", { "stat": "Average" } ],
+                  [ "...", { "stat": "p99" } ],
+                  [ "...", { "stat": "Maximum" } ] ] } },
+            { "type": "log", "x": 12, "y": 6, "width": 12, "height": 6,
+              "properties": { "title": "Rate-limit hits (per hour)",
+                "region": "${AWS::Region}", "view": "bar",
+                "query": "SOURCE '/aws/lambda/summytext-backend-v2-${Environment}' | filter @message like /Rate limit exceeded/ | stats count() as hits by bin(1h)" } }
+          ]
+        }
+
+Outputs:
+  FunctionUrl:
+    Description: >
+      Public HTTPS endpoint for this environment (Lambda Function URL). It has a
+      trailing slash and no stage prefix -- call it directly, e.g.
+      <FunctionUrl>api/v1/predict/. Set the frontend's SUM_MY_TEXT_SERVICE to
+      this value WITHOUT the trailing slash.
+    Value: !GetAtt LambdaFunctionUrl.FunctionUrl
+
+  LambdaFunctionArn:
+    Value: !GetAtt LambdaFunction.Arn
+
+  DashboardUrl:
+    Description: CloudWatch dashboard for this environment's backend.
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=summytext-backend-v2-${Environment}

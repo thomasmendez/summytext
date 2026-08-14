@@ -1,8 +1,16 @@
 SHELL := /bin/bash
 
+MODEL_CACHE := $(CURDIR)/model_cache
+VENV := env
+PIP := $(VENV)/bin/pip
+
 install: # @HELP python install project packages
-install:
-	pip install -r requirements.txt
+install: $(PIP)
+	$(PIP) install -r requirements.txt
+
+install-dev: # @HELP python install project + test packages
+install-dev: $(PIP)
+	$(PIP) install -r requirements.txt -r requirements-dev.txt
 
 env-windows: # @HELP python make virtualenv locally windows
 env-windows:
@@ -10,30 +18,27 @@ env-windows:
 	py -m venv env
 
 env-linux: # @HELP python make virtualenv locally linux/mac
-env-linux:
-	python3 -m pip install --user virtualenv
-	python3 -m venv env
-	source env/bin/activate
-	pip install -r requirements.txt
+env-linux: $(PIP)
 
-serve: # @HELP python run locally
+$(PIP):
+	python3 -m venv $(VENV)
+	$(PIP) install --upgrade pip
+
+bake-models: # @HELP download the flair/transformers models into a local model_cache/ dir (same models baked into the Docker image)
+bake-models:
+	mkdir -p $(MODEL_CACHE)/huggingface/hub $(MODEL_CACHE)/flair
+	HF_HOME=$(MODEL_CACHE)/huggingface \
+	FLAIR_CACHE_ROOT=$(MODEL_CACHE)/flair \
+	PYTHONPATH=. $(VENV)/bin/python3 scripts/bake_models.py
+
+serve: # @HELP python run locally (requires `make bake-models` first)
 serve:
-	uvicorn app.main:app --reload
+	HF_HOME=$(MODEL_CACHE)/huggingface \
+	FLAIR_CACHE_ROOT=$(MODEL_CACHE)/flair \
+	$(VENV)/bin/uvicorn app.main:app --reload
 
-test: # @HELP python run application test
+test: # @HELP python run application test (requires `make bake-models` first)
 test:
-	python test ./... -count=1 -v
-
-build: # @HELP build application binary and place in bin directory
-build:
-	cd env/lib/python3.7/site-packages/
-	zip -r9 ../../../../function.zip .
-	cd ../../../../
-	zip -g ./function.zip -r app
-
-build-ci-cd: # @HELP build application binary and place in bin directory
-build-ci-cd:
-	cd /home/runner/.local/lib/python3.10.10/site-packages
-	zip -r9 ../../../../function.zip .
-	cd ../../../../
-	zip -g ./function.zip -r app 
+	HF_HOME=$(MODEL_CACHE)/huggingface \
+	FLAIR_CACHE_ROOT=$(MODEL_CACHE)/flair \
+	$(VENV)/bin/pytest -v

@@ -131,4 +131,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-transformers/cache/
+model_cache/
+
+
+.aws-sam
+samconfig.toml
+payload.json
+response.json

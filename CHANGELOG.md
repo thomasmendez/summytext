@@ -5,6 +5,54 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2026-08-14
+
+Full-stack rewrite and deployment refactor: the backend is now a self-contained,
+faster cold-start deploy, and the frontend was rebuilt from scratch on a modern
+stack.
+
+### Backend
+
+- **Self-contained SAM deploy** (`backend/infra/`): ECR repo, container-image
+  Lambda, IAM role, log group, and public endpoint provisioned via
+  `sam build` / `sam deploy` — no CI or Terraform submodule dependency.
+- **Lambda Function URL** replaces API Gateway. It honors the full Lambda
+  timeout, so a ~60s cold-start request completes instead of hitting API
+  Gateway's 30s ceiling and returning a 504.
+- **Models baked into the image at build time** (`scripts/bake_models.py`, with
+  offline mode enforced at runtime) so nothing is downloaded on cold start.
+- Lazy, timing-instrumented model loading so heavy imports don't block Lambda
+  init.
+- Rate-limit middleware no longer counts CORS preflight (`OPTIONS`) requests
+  against a caller's hourly quota.
+- Dependencies pinned and switched to CPU-only PyTorch wheels; dropped unused
+  `spacy`. Added test scaffolding and cold-start/cost analysis notes.
+
+### Infrastructure
+
+- **Migrated to AWS SAM / CloudFormation stacks**, replacing the old GitHub
+  Actions + Terraform-module git submodule (`workflows/`) deployment. Both
+  backend and frontend now ship from in-repo SAM templates (`backend/infra/`,
+  `frontend/infra/`) via `sam build` / `sam deploy` — no CI pipeline or external
+  Terraform repo required.
+
+### Frontend
+
+- **Rewritten from scratch**: React 17 → 19, JS → TypeScript, CRA/Webpack →
+  **Vite**, MUI/Emotion → **Tailwind CSS**, Redux Toolkit 1 → 2, and
+  `axios`/`axios-retry` → native `fetch`. Testing moved to Playwright e2e +
+  `msw` mocks; `react-router-dom` replaced by a small in-house router (only two
+  routes). Legacy app (incl. ~58k-line `yarn.lock`) deleted outright.
+- **Fewer API calls**: request retries cut from 10 → 2 with a 120s timeout.
+  Cold requests now succeed on the first call over the Function URL instead of
+  retrying into the old 30s ceiling and spawning extra cold containers.
+- **Deployment infra** (`frontend/infra/`): SAM template for a private S3 bucket
+  + CloudFront (Origin Access Control) per environment, with SPA fallback
+  routing. No custom domain/Route 53/ACM yet.
+- **Removed**: Google Analytics pageview tracking; PDF-to-text input (dropped
+  the `pdfjs-dist` arbitrary-JS-execution vulnerability); speech-to-text input
+  (low-value). PDF/speech components kept in-repo for reference.
+
 ## [1.0.0] - 2024-06-21
 
 Original production release. Development began November 2022; this snapshot
