@@ -22,9 +22,19 @@ const Home = () => {
   useEffect(() => {
     if (!isLoading) return
 
+    // Rotate messages so a slow response (often a cold start) reads as the model
+    // working through the text, not a stalled request.
+    const workingMessages = [
+      'AI Models are processing your request…',
+      'Analyzing your text…',
+      'Still working through it…',
+      'Almost there, hang tight…',
+    ]
+    let msgIndex = 0
     const timer = setInterval(() => {
-      dispatch(analysisActions.infoAnalysis('The request is taking longer than expected. Please wait'))
-    }, 7000)
+      dispatch(analysisActions.infoAnalysis(workingMessages[msgIndex % workingMessages.length]))
+      msgIndex += 1
+    }, 15000)
     infoTimerRef.current = timer
 
     callAnalysis(text ?? '')

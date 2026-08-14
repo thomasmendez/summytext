@@ -62,7 +62,7 @@ test.describe('navigation', () => {
       'does not store any personal data',
     )
     await expect(page.getByTestId('privacy-no-storage')).toContainText(
-      'No data that is typed or imported from a PDF is stored',
+      'No data that is typed is stored.',
     )
     await expect(page.getByTestId('privacy-tracking')).toContainText(
       'Tracking services',

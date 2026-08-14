@@ -55,8 +55,8 @@ test.describe('analysis error handling', () => {
   test('shows the "taking longer" notice while a slow request is pending', async ({
     page,
   }) => {
-    // The info banner fires on a 7s timer, so give this test extra headroom.
-    test.setTimeout(30000)
+    // The info banner fires on a 15s timer, so give this test extra headroom.
+    test.setTimeout(45000)
 
     await page.goto('/')
     await expect(page.getByTestId('home-view')).toBeVisible()
@@ -66,13 +66,11 @@ test.describe('analysis error handling', () => {
 
     // While pending the submit button shows its loading (disabled) state...
     await expect(page.getByTestId('submit-button')).toBeDisabled()
-    // ...and after ~7s the "taking longer than expected" info appears.
+    // ...and after ~15s the "working" info banner appears.
     await expect(page.getByTestId('snackbar-info')).toBeVisible({
-      timeout: 15000,
+      timeout: 25000,
     })
-    await expect(page.getByTestId('snackbar-info')).toContainText(
-      'taking longer than expected',
-    )
+    await expect(page.getByTestId('snackbar-info')).toContainText('AI Models are processing your request…')
     // Still no result — the request never resolved.
     await expect(page.getByTestId('analysis-view')).not.toBeVisible()
   })
