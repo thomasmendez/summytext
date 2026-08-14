@@ -48,7 +48,7 @@ Parameters:
       frontend-v2 CloudFront SiteUrl output.
 
 Resources:
-  # ponytail: no AWS::ECR::Repository here on purpose -- SAM manages ECR via the
+  # No AWS::ECR::Repository here on purpose -- SAM manages ECR via the
   # companion stack (see top-of-file Description). A repo declared in this stack
   # can't receive the image; the push precedes stack creation.
 
