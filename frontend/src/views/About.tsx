@@ -55,9 +55,9 @@ const About = () => {
                   💡 AI Models
                 </td>
                 <td className="border-b border-black p-3 align-top">
-                  <p>ChatGPT 2 Transformer Model</p>
-                  <p>Flair NLP Classification Model</p>
-                  <p>Flair NLP Sentiment Model</p>
+                  <p><a href="https://huggingface.co/openai-community/gpt2-medium" target="_blank">ChatGPT 2 Transformer Model</a></p>
+                  <p><a href="https://huggingface.co/flair/ner-english-ontonotes-large" target="_blank">Flair NLP Classification Model</a></p>
+                  <p><a href="https://github.com/flairNLP/flair" target="_blank">Flair NLP Sentiment Model</a></p>
                 </td>
               </tr>
               <tr>
