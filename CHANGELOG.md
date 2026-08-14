@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.0.0] - 2026-08-??
 
 Backend deployment refactor (`refactor/deployment`). Reworked how the backend is
 packaged, deployed, and exposed, targeting a self-contained deploy and a faster,
@@ -42,13 +42,6 @@ more reliable path for the infrequent but heavy cold-start workload.
   Terraform-module git submodule (`workflows/`) driven by GitHub Actions.
 - Backend dependencies pinned and switched to CPU-only PyTorch wheels; dropped
   the unused `spacy` dependency.
-
-### Fixed
-
-- **Infinite 307 redirect loop** on the predict endpoint. A Lambda Function URL
-  strips the trailing slash from the request path, so the old `/api/v1/predict/`
-  route kept redirecting to re-add the slash and looped forever. The route is
-  now registered without a trailing slash (`@router.post("")`).
 
 ### Removed
 
