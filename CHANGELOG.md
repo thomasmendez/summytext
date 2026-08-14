@@ -31,7 +31,7 @@ more reliable path for the infrequent but heavy cold-start workload.
 
 ### Changed
 
-- **Fewer frontend API calls** (`frontend-v2/src/services/sumMyTextService.ts`):
+- **Fewer frontend API calls** (`frontend/src/services/sumMyTextService.ts`):
   request retries reduced from **10 to 2** with exponential backoff, plus an
   explicit 120s timeout. Cold requests now complete on the first call over the
   Function URL, so the client no longer retries into the 30s ceiling and no
@@ -47,14 +47,14 @@ more reliable path for the infrequent but heavy cold-start workload.
   App/Webpack → **Vite**, MUI/Emotion → **Tailwind CSS**, Redux Toolkit 1 →
   2 / react-redux 8 → 9, and `axios`/`axios-retry` → native `fetch`. Storybook
   and Jest are gone; component-level docs aren't replaced, and testing moved
-  to Playwright e2e tests (`frontend-v2/e2e/`) plus `msw` request mocks.
+  to Playwright e2e tests (`frontend/e2e/`) plus `msw` request mocks.
   `react-router-dom` was dropped for a small in-house history-based router
-  (`frontend-v2/src/router.tsx`), since the app only ever had two routes.
+  (`frontend/src/router.tsx`), since the app only ever had two routes.
 
 ### Added
 
 - **Frontend deployment infra**
-  (`frontend-v2/infra/template.yaml`, `frontend-v2/infra/README.md`): AWS SAM
+  (`frontend/infra/template.yaml`, `frontend/infra/README.md`): AWS SAM
   template provisioning a private S3 bucket + CloudFront (via Origin Access
   Control) per environment, with SPA fallback routing. No custom
   domain/Route 53/ACM yet — v1 had a custom domain; not carried over.
@@ -63,19 +63,19 @@ more reliable path for the infrequent but heavy cold-start workload.
 
 - API Gateway from the backend request path, replaced by the Lambda Function URL.
 - **Legacy `frontend/` app** deleted outright (Create React App/Webpack build,
-  Yarn PnP, Storybook, ~58k-line `yarn.lock`), superseded by `frontend-v2`
+  Yarn PnP, Storybook, ~58k-line `yarn.lock`), superseded by `frontend`
   above.
 - **Google Analytics pageview tracking** (`react-ga4`, `frontend/src/analytics/TrackRoute.js`).
-  Not carried over to `frontend-v2`; no replacement yet.
+  Not carried over to `frontend`; no replacement yet.
 - **PDF-to-text input** from the frontend
-  (`frontend-v2/src/components/InputTextbox.tsx`). The extraction path relied on
+  (`frontend/src/components/InputTextbox.tsx`). The extraction path relied on
   `pdfjs-dist`, which carried a high-severity vulnerability (arbitrary
   JavaScript execution when parsing a malicious PDF). The convenience of
   importing text from a PDF isn't worth reintroducing that risk, so the button
   is commented out of the input row. The `PdfToTextButton` component is kept in
   the repo for reference.
 - **Speech-to-text input** from the frontend
-  (`frontend-v2/src/components/InputTextbox.tsx`). Removed as a low-value,
+  (`frontend/src/components/InputTextbox.tsx`). Removed as a low-value,
   rarely used feature. The `SpeechToTextButton` component is kept in the repo
   for reference and can be re-enabled by restoring its import and rendering it
   in the input row.
