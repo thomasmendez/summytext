@@ -105,6 +105,37 @@ Resources:
       FunctionUrlConfig:
         AuthType: NONE
 
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub summytext-backend-v2-${Environment}
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            { "type": "metric", "x": 0, "y": 0, "width": 12, "height": 6,
+              "properties": { "title": "API usage - predict invocations",
+                "region": "${AWS::Region}", "stat": "Sum", "period": 3600, "view": "timeSeries",
+                "metrics": [ [ "AWS/Lambda", "Invocations", "FunctionName", "summytext-backend-v2-${Environment}" ] ] } },
+            { "type": "metric", "x": 12, "y": 0, "width": 12, "height": 6,
+              "properties": { "title": "Errors & throttles",
+                "region": "${AWS::Region}", "stat": "Sum", "period": 3600, "view": "timeSeries",
+                "metrics": [
+                  [ "AWS/Lambda", "Errors", "FunctionName", "summytext-backend-v2-${Environment}" ],
+                  [ "AWS/Lambda", "Throttles", "FunctionName", "summytext-backend-v2-${Environment}" ] ] } },
+            { "type": "metric", "x": 0, "y": 6, "width": 12, "height": 6,
+              "properties": { "title": "Duration (cold-start visibility)",
+                "region": "${AWS::Region}", "period": 3600, "view": "timeSeries",
+                "metrics": [
+                  [ "AWS/Lambda", "Duration", "FunctionName", "summytext-backend-v2-${Environment}", { "stat": "Average" } ],
+                  [ "...", { "stat": "p99" } ],
+                  [ "...", { "stat": "Maximum" } ] ] } },
+            { "type": "log", "x": 12, "y": 6, "width": 12, "height": 6,
+              "properties": { "title": "Rate-limit hits (per hour)",
+                "region": "${AWS::Region}", "view": "bar",
+                "query": "SOURCE '/aws/lambda/summytext-backend-v2-${Environment}' | filter @message like /Rate limit exceeded/ | stats count() as hits by bin(1h)" } }
+          ]
+        }
+
 Outputs:
   FunctionUrl:
     Description: >
@@ -116,3 +147,7 @@ Outputs:
 
   LambdaFunctionArn:
     Value: !GetAtt LambdaFunction.Arn
+
+  DashboardUrl:
+    Description: CloudWatch dashboard for this environment's backend.
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=summytext-backend-v2-${Environment}
