@@ -37,7 +37,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: docker build -t summytext-backend:ci backend
       - uses: aquasecurity/trivy-action@v0.36.0
         with:
