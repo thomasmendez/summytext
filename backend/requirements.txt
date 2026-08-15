@@ -5,7 +5,7 @@ uvicorn[standard]
 mangum
 python-dotenv
 torch==2.6.0+cpu
-transformers==4.57.6
+transformers==5.15.0
 bert-extractive-summarizer==0.10.1
 flair==0.15.1
 cachetools
